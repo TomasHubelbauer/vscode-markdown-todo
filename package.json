@@ -4,6 +4,10 @@
     "description": "Collects MarkDown checkboxen in the workspace to an auto-updating Output pane channel",
     "version": "0.0.1",
     "publisher": "TomasHubelbauer",
+    "repository": {
+        "type" : "git",
+        "url" : "https://github.com/TomasHubelbauer/vscode-markdown-todo.git"
+    },
     "engines": {
         "vscode": "^1.22.0"
     },
