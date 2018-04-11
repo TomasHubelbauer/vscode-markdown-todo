@@ -14,4 +14,4 @@ See [todo](todo).
 
 ## Publishing
 
-https://code.visualstudio.com/docs/extensions/publish-extension
+[`vsce publish`](https://code.visualstudio.com/docs/extensions/publish-extension)

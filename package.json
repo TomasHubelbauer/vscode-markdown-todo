@@ -1,8 +1,8 @@
 {
     "name": "vscode-markdown-todo",
-    "displayName": "VSCode MarkDown To-Do",
+    "displayName": "MarkDown To-Do",
     "description": "Collects MarkDown checkboxen in the workspace to an auto-updating Output pane channel",
-    "version": "0.0.1",
+    "version": "1.0.0",
     "publisher": "TomasHubelbauer",
     "repository": {
         "type" : "git",
