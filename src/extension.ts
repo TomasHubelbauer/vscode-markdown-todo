@@ -2,28 +2,35 @@
 import * as vscode from 'vscode';
 
 let channel: vscode.OutputChannel;
-let lastUpdate: Date | undefined;
+let isUpdating = false;
 
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
-    console.log('activated');
     channel = vscode.window.createOutputChannel('To-Do');
     context.subscriptions.push(channel);
-    // TODO: Use this instead of interval, but currently it happens too often so I need to do some guarding.
-    //vscode.workspace.onDidChangeTextDocument(async event => await update());
+    vscode.workspace.onDidSaveTextDocument(async textDocument => {
+        // Ignore irrelevant documents that will not affect the to-do items
+        if (textDocument.uri.scheme !== 'file' || textDocument.languageId !== 'markdown') {
+            return;
+        }
+
+        console.log('Saved', textDocument.fileName);
+        await update();
+    });
     await update();
-    // Auto-update every ten seconds until we do `onDidChangeTextDocument`
-    setInterval(update, 10 * 1000);
 }
 
 async function update() {
-    // Update at most every five seconds (for when we do `onDidChangeTextDocument`).
-    // if (lastUpdate !== undefined && (Date.now() - lastUpdate.getTime()) < 1000 * 60 * 5) {
-    //     return;
-    // }
+    if (isUpdating) {
+        console.log('Ignoring.');
+        return;
+    }
 
-    channel.clear();
+    isUpdating = true;
+    console.log('Updating…');
+
     // https://github.com/Microsoft/vscode/issues/47645
     const files = await vscode.workspace.findFiles('**/*.md');
+    channel.clear();
     for (const file of files) {
         const textDocument = await vscode.workspace.openTextDocument(file);
 
@@ -43,16 +50,10 @@ async function update() {
         }).filter(line => line !== undefined);
 
         for (const line of lines) {
-            console.log(line);
             channel.appendLine(line!);
         }
     }
 
-    lastUpdate = new Date();
-    channel.appendLine('Last updated ' + lastUpdate.toLocaleTimeString());
-    console.log('updated');
-}
-
-export function deactivate() {
-    console.log('deactivated');
+    console.log('Updated');
+    isUpdating = false;
 }
