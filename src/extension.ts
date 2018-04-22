@@ -108,8 +108,6 @@ class TodoTreeDataProvider implements TreeDataProvider<Item> {
             const textDocument = await workspace.openTextDocument(file);
             this.refresh(textDocument);
         }
-
-        this._onDidChangeTreeData.fire();
     }
 
     refresh(textDocument: TextDocument) {
@@ -140,7 +138,7 @@ class TodoTreeDataProvider implements TreeDataProvider<Item> {
             }
         }
 
-        this._onDidChangeTreeData.fire(file);
+        this._onDidChangeTreeData.fire();
     }
 
     dispose() {
