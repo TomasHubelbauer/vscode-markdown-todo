@@ -66,7 +66,7 @@ class TodoTreeDataProvider implements TreeDataProvider<Item> {
     getTreeItem(element: Item): TreeItem | Thenable<TreeItem> {
         switch (element.type) {
             case 'file': {
-                const item = new TreeItem(path.parse(element.path).name, TreeItemCollapsibleState.Expanded);
+                const item = new TreeItem(`${path.parse(element.path).name} (${element.todos.length})`, TreeItemCollapsibleState.Expanded);
                 item.command = { title: 'Open file', command: 'markdown-todo.openFile', arguments: [element] };
                 item.contextValue = 'file';
                 item.iconPath = ThemeIcon.Folder;

@@ -4,6 +4,7 @@
 
 - Filter to only files that have to-do items
 - Fix a bug where nested list items we're inspected to to-do items
+- Display the number of to-do items in the file tree view item
 
 ## `3.0.0` (2018-04-22)
 
