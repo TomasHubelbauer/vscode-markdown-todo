@@ -29,7 +29,8 @@ export async function activate(context: ExtensionContext): Promise<void> {
 
     context.subscriptions.push(commands.registerCommand('markdown-todo.refreshFile', async (file: File) => {
         const textDocument = await workspace.openTextDocument(Uri.file(file.path));
-        todoTreeDataProvider.refresh(textDocument);
+        // TODO: Fix the bug where some files do not update removed todos todoTreeDataProvider.refresh(textDocument);
+        await todoTreeDataProvider.refreshAll();
     }));
 
     context.subscriptions.push(commands.registerCommand('markdown-todo.removeTodo', async (todo: Todo) => {
@@ -51,7 +52,8 @@ export async function activate(context: ExtensionContext): Promise<void> {
 
         // Update view without saving the file
         todo.isChecked = !todo.isChecked;
-        todoTreeDataProvider.refresh(textEditor.document);
+        // TODO: Fix the bug where some files do not update removed todos todoTreeDataProvider.refresh(textEditor.document);
+        await todoTreeDataProvider.refreshAll();
     }));
 
     const todoTreeDataProvider = new TodoTreeDataProvider();
@@ -64,7 +66,8 @@ export async function activate(context: ExtensionContext): Promise<void> {
             return;
         }
 
-        todoTreeDataProvider.refresh(textDocument);
+        // TODO: Fix the bug where some files do not update removed todos todoTreeDataProvider.refresh(textDocument);
+        await todoTreeDataProvider.refreshAll();
     });
 
     await todoTreeDataProvider.refreshAll();
@@ -129,6 +132,7 @@ class TodoTreeDataProvider implements TreeDataProvider<Item> {
     }
 
     async refreshAll() {
+        this.cache = [];
         const files = await workspace.findFiles('**/*.md'); // https://github.com/Microsoft/vscode/issues/47645
         for (const file of files) {
             const textDocument = await workspace.openTextDocument(file);
