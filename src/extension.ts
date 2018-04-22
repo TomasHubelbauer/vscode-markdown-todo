@@ -4,7 +4,7 @@ import { ExtensionContext, window, workspace, Uri, TreeDataProvider, TreeItem, E
 import * as path from 'path';
 
 type File = { type: 'file'; path: string; todos: Todo[]; };
-type Todo = { type: 'todo'; text: string; isChecked: boolean; line: number; file: File; };
+type Todo = { type: 'todo'; text: string; isChecked: boolean; line: number; file: File; indent: string; };
 type Item = File | Todo;
 
 export async function activate(context: ExtensionContext): Promise<void> {
@@ -35,7 +35,7 @@ export async function activate(context: ExtensionContext): Promise<void> {
         const textEditor = await window.showTextDocument(Uri.file(todo.file.path), { preview: true });
         const range = textEditor.document.lineAt(todo.line).range;
         await textEditor.edit(editBuilder => {
-            editBuilder.replace(range, `- [${todo.isChecked ? ' ' : 'x'}] ${todo.text}`);
+            editBuilder.replace(range, `${todo.indent}- [${todo.isChecked ? ' ' : 'x'}] ${todo.text}`);
         });
 
         // Update view without saving the file
@@ -111,7 +111,7 @@ class TodoTreeDataProvider implements TreeDataProvider<Item> {
     }
 
     refresh(textDocument: TextDocument) {
-        const todos: { text: string; isChecked: boolean; line: number; }[] = [];
+        const todos: { text: string; isChecked: boolean; line: number; indent: string; }[] = [];
         for (let index = 0; index < textDocument.lineCount; index++) {
             const line = textDocument.lineAt(index);
             const dom = MarkDownDOM.parse(line.text.trim());
@@ -121,7 +121,8 @@ class TodoTreeDataProvider implements TreeDataProvider<Item> {
                 if (block.items.length === 1) {
                     const item = block.items[0];
                     if (item.type === 'checkbox') {
-                        todos.push({ text: item.text.trim(), isChecked: item.check !== null, line: line.lineNumber });
+                        const indent = (/^\s+/.exec(line.text) || [''])[0];
+                        todos.push({ text: item.text.trim(), isChecked: item.check !== null, line: line.lineNumber, indent });
                     }
                 } else {
                     // TODO: Telemetry.

@@ -1,10 +1,11 @@
 # Changelog
 
-## `4.0.0` (2018-04-23)
+## `4.0.0` (Unreleased)
 
 - Filter to only files that have to-do items
 - Fix a bug where nested list items we're inspected to to-do items
 - Display the number of to-do items in the file tree view item
+- Fix a bug where nested to-do items would have their indent reset upon toggling
 
 ## `3.0.0` (2018-04-22)
 
