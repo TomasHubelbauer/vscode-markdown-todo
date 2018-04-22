@@ -28,7 +28,7 @@ export async function activate(context: ExtensionContext): Promise<void> {
     }));
 
     context.subscriptions.push(commands.registerCommand('markdown-todo.refreshFile', async (file: File) => {
-        const textDocument = await workspace.openTextDocument(Uri.file(file.path));
+        //const textDocument = await workspace.openTextDocument(Uri.file(file.path));
         // TODO: Fix the bug where some files do not update removed todos todoTreeDataProvider.refresh(textDocument);
         await todoTreeDataProvider.refreshAll();
     }));
