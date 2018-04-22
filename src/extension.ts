@@ -1,6 +1,6 @@
 'use strict';
 import MarkDownDOM from 'markdown-dom';
-import { ExtensionContext, window, workspace, Uri, TreeDataProvider, TreeItem, Event, TextDocument, EventEmitter, TreeItemCollapsibleState, ThemeIcon, commands, Selection } from 'vscode';
+import { ExtensionContext, window, workspace, Uri, TreeDataProvider, TreeItem, Event, TextDocument, EventEmitter, TreeItemCollapsibleState, ThemeIcon, commands, Selection, Range } from 'vscode';
 import * as path from 'path';
 
 type File = { type: 'file'; path: string; headlessTodos: Todo[]; heads: Head[]; };
@@ -47,7 +47,12 @@ export async function activate(context: ExtensionContext): Promise<void> {
         const range = textEditor.document.lineAt(todo.line).range;
         textEditor.revealRange(range);
         await textEditor.edit(editBuilder => {
-            editBuilder.replace(range, `${todo.indent}- [${todo.isChecked ? ' ' : 'x'}] ${todo.text}`);
+            const document = textEditor.document;
+            // TODO: Verify this won't break with -[ which we I guess support (use indexOf otherwise or improve MarkDownDOM to give this)
+            const checkStart = document.positionAt(document.offsetAt(range.start) + todo.indent.length + '- ['.length);
+            const checkEnd = document.positionAt(document.offsetAt(range.start) + todo.indent.length + '- [?'.length);
+            const checkRange = new Range(checkStart, checkEnd);
+            editBuilder.replace(checkRange, todo.isChecked ? ' ' : 'x');
         });
 
         // Update view without saving the file
@@ -171,6 +176,7 @@ class TodoTreeDataProvider implements TreeDataProvider<Item> {
                         if (block.items.length === 1) {
                             const item = block.items[0];
                             if (item.type === 'checkbox') {
+                                // TODO: Figure out why item.indent is always zero
                                 const indent = (/^\s+/.exec(line.text) || [''])[0];
                                 const todo = { text: item.text.trim(), isChecked: item.check !== null, line: line.lineNumber, indent };
                                 if (heads.length === 0) {
