@@ -16,6 +16,7 @@ export async function activate(context: ExtensionContext): Promise<void> {
         const textEditor = await window.showTextDocument(Uri.file(todo.file.path), { preview: true });
         const range = textEditor.document.lineAt(todo.line).range;
         textEditor.selection = new Selection(range.end, range.start);
+        textEditor.revealRange(range);
     }));
 
     context.subscriptions.push(commands.registerCommand('markdown-todo.refreshFile', async (file: File) => {
@@ -26,6 +27,7 @@ export async function activate(context: ExtensionContext): Promise<void> {
     context.subscriptions.push(commands.registerCommand('markdown-todo.removeTodo', async (todo: Todo) => {
         const textEditor = await window.showTextDocument(Uri.file(todo.file.path), { preview: true });
         const range = textEditor.document.lineAt(todo.line).rangeIncludingLineBreak;
+        textEditor.revealRange(range);
         await textEditor.edit(editBuilder => {
             editBuilder.replace(range, '');
         });
@@ -34,6 +36,7 @@ export async function activate(context: ExtensionContext): Promise<void> {
     context.subscriptions.push(commands.registerCommand('markdown-todo.toggleTodo', async (todo: Todo) => {
         const textEditor = await window.showTextDocument(Uri.file(todo.file.path), { preview: true });
         const range = textEditor.document.lineAt(todo.line).range;
+        textEditor.revealRange(range);
         await textEditor.edit(editBuilder => {
             editBuilder.replace(range, `${todo.indent}- [${todo.isChecked ? ' ' : 'x'}] ${todo.text}`);
         });
