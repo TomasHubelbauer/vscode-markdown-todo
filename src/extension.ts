@@ -111,15 +111,7 @@ class TodoTreeDataProvider implements TreeDataProvider<Item> {
     }
 
     refresh(textDocument: TextDocument) {
-        const path = textDocument.uri.fsPath;
-        let file = this.cache.find(item => item.type === 'file' && item.path === path);
-        if (file === undefined) {
-            file = { type: 'file', path, todos: [] };
-            this.cache.push(file);
-        } else {
-            file.todos = [];
-        }
-
+        const todos: { text: string; isChecked: boolean; line: number; }[] = [];
         for (let index = 0; index < textDocument.lineCount; index++) {
             const line = textDocument.lineAt(index);
             const dom = MarkDownDOM.parse(line.text);
@@ -129,13 +121,24 @@ class TodoTreeDataProvider implements TreeDataProvider<Item> {
                 if (block.items.length === 1) {
                     const item = block.items[0];
                     if (item.type === 'checkbox') {
-                        file.todos.push({ type: 'todo', text: item.text.trim(), isChecked: item.check !== null, file, line: line.lineNumber });
+                        todos.push({ text: item.text.trim(), isChecked: item.check !== null, line: line.lineNumber });
                     }
                 } else {
                     // TODO: Telemetry.
                     throw new Error(`Unexpected item count ${block.items.length}.`);
                 }
             }
+        }
+
+        if (todos.length > 0) {
+            const path = textDocument.uri.fsPath;
+            let file = this.cache.find(item => item.type === 'file' && item.path === path);
+            if (file === undefined) {
+                file = { type: 'file', path, todos: [] };
+                this.cache.push(file);
+            }
+
+            file.todos = todos.map(todo => ({ ...todo, file: file!, type: 'todo' as 'todo' }));
         }
 
         this._onDidChangeTreeData.fire();
