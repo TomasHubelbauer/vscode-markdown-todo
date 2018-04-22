@@ -1,5 +1,9 @@
 # Changelog
 
+## `3.0.0` (2018-04-22)
+
+Convert to a version which uses a tree view to collect the to-do items.
+
 ## `2.0.0` (2018-04-22)
 
 - Use MarkDownDOM to parse the unordered checkbox list blocks
