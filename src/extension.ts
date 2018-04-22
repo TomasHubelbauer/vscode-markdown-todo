@@ -1,6 +1,6 @@
 'use strict';
 import MarkDownDOM, { MarkDownUnorderedListBlock } from 'markdown-dom';
-import { ExtensionContext, window, workspace, Uri, TreeDataProvider, TreeItem, Event, TextDocument, EventEmitter, TreeItemCollapsibleState, ThemeIcon, commands, Command, Range, Selection } from 'vscode';
+import { ExtensionContext, window, workspace, Uri, TreeDataProvider, TreeItem, Event, TextDocument, EventEmitter, TreeItemCollapsibleState, ThemeIcon, commands, Selection } from 'vscode';
 import * as path from 'path';
 
 type File = { type: 'file'; path: string; todos: Todo[]; };
