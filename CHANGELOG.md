@@ -1,5 +1,10 @@
 # Changelog
 
+## `4.0.0` (2018-04-23)
+
+- Filter to only files that have to-do items
+- Fix a bug where nested list items we're inspected to to-do items
+
 ## `3.0.0` (2018-04-22)
 
 Convert to a version which uses a tree view to collect the to-do items.

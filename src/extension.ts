@@ -114,7 +114,7 @@ class TodoTreeDataProvider implements TreeDataProvider<Item> {
         const todos: { text: string; isChecked: boolean; line: number; }[] = [];
         for (let index = 0; index < textDocument.lineCount; index++) {
             const line = textDocument.lineAt(index);
-            const dom = MarkDownDOM.parse(line.text);
+            const dom = MarkDownDOM.parse(line.text.trim());
             if (dom.blocks && dom.blocks.length === 1 && dom.blocks[0].type === 'unordered-list') {
                 const block = dom.blocks[0] as MarkDownUnorderedListBlock;
 
