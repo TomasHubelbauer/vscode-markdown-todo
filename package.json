@@ -2,7 +2,7 @@
     "name": "vscode-markdown-todo",
     "displayName": "MarkDown To-Do",
     "description": "Collects MarkDown checkboxen in the workspace to an auto-updating Output pane channel",
-    "version": "5.0.0",
+    "version": "5.0.1",
     "publisher": "TomasHubelbauer",
     "repository": {
         "type": "git",
@@ -19,7 +19,7 @@
     ],
     "main": "./out/extension",
     "contributes": {
-        "commands":[
+        "commands": [
             {
                 "command": "markdown-todo.openFile",
                 "title": "Open file"
@@ -88,6 +88,6 @@
         "@types/mocha": "^2.2.42"
     },
     "dependencies": {
-        "markdown-dom": "0.0.7"
+        "markdown-dom": "0.0.8"
     }
 }

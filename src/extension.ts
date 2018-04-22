@@ -158,6 +158,12 @@ class TodoTreeDataProvider implements TreeDataProvider<Item> {
                             }
                         }
 
+                        // TODO: Fix this in MarkDownDOM
+                        const trash = /^#+/.exec(text);
+                        if (trash !== null) {
+                            text = text.substring(trash.length);
+                        }
+
                         heads.push({ text, line: line.lineNumber, todos: [] });
                         break;
                     }
@@ -192,7 +198,7 @@ class TodoTreeDataProvider implements TreeDataProvider<Item> {
             }
 
             file.headlessTodos = headlessTodos.map(todo => ({ ...todo, file: file!, type: 'todo' as 'todo' }));
-            file.heads = heads.map(head => ({
+            file.heads = heads.filter(head => head.todos.length > 0).map(head => ({
                 type: 'head' as 'head',
                 ...head,
                 file: file!,

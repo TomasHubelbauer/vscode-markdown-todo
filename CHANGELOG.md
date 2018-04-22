@@ -1,8 +1,12 @@
 # Changelog
 
-## `5.0.0` (Unreleased)
+## `5.0.1` (2018-04-23)
 
-- Group to-do items underneath MarkDown headers in the tree view
+Fix parsing MarkDown headers to group items under by upgrading MarkDownDOM.
+
+## `5.0.0` (2018-04-23)
+
+Group to-do items underneath MarkDown headers in the tree view
 
 ## `4.0.0` (2018-04-22)
 
