@@ -1,19 +1,19 @@
 'use strict';
-import * as vscode from 'vscode';
+import MarkDownDOM, { MarkDownUnorderedListBlock } from 'markdown-dom';
+import { OutputChannel, ExtensionContext, window, workspace, Uri } from 'vscode';
 
-let channel: vscode.OutputChannel;
+let channel: OutputChannel;
 let isUpdating = false;
 
-export async function activate(context: vscode.ExtensionContext): Promise<void> {
-    channel = vscode.window.createOutputChannel('To-Do');
+export async function activate(context: ExtensionContext): Promise<void> {
+    channel = window.createOutputChannel('To-Do');
     context.subscriptions.push(channel);
-    vscode.workspace.onDidSaveTextDocument(async textDocument => {
+    workspace.onDidSaveTextDocument(async textDocument => {
         // Ignore irrelevant documents that will not affect the to-do items
         if (textDocument.uri.scheme !== 'file' || textDocument.languageId !== 'markdown') {
             return;
         }
 
-        console.log('Saved', textDocument.fileName);
         await update();
     });
     await update();
@@ -21,39 +21,36 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 
 async function update() {
     if (isUpdating) {
-        console.log('Ignoring.');
         return;
     }
 
     isUpdating = true;
-    console.log('Updating…');
 
     // https://github.com/Microsoft/vscode/issues/47645
-    const files = await vscode.workspace.findFiles('**/*.md');
+    const files = await workspace.findFiles('**/*.md');
     channel.clear();
     for (const file of files) {
-        const textDocument = await vscode.workspace.openTextDocument(file);
+        const filePath = file.fsPath.substring(workspace.getWorkspaceFolder(Uri.file(file.fsPath))!.uri.fsPath.length + 1);
+        const textDocument = await workspace.openTextDocument(file);
 
-        const lines = textDocument.getText().split(/\r|\n/).map((line, index) => {
-            line = line.trim();
-            if (line.length === 0) {
-                return undefined;
-            } else if (line.startsWith('- [ ]') || line.startsWith('- [x]') || line.startsWith('- [X]')) {
-                return textDocument.fileName + ':' + (index + 1) + ' ' + line.substring('- [ ]'.length).trim();
-            } else if (line.startsWith('-[ ]') || line.startsWith('-[x]') || line.startsWith('-[X]')) {
-                return textDocument.fileName + ':' + (index + 1) + ' ' + line.substring('-[ ]'.length).trim();
-            } else if (line.startsWith('[ ]') || line.startsWith('[x]') || line.startsWith('[X]')) {
-                return textDocument.fileName + ':' + (index + 1) + ' ' + line.substring('[ ]'.length).trim();
+        for (let index = 0; index < textDocument.lineCount; index++) {
+            const line = textDocument.lineAt(index);
+            const dom = MarkDownDOM.parse(line.text);
+            if (dom.blocks && dom.blocks.length === 1 && dom.blocks[0].type === 'unordered-list') {
+                const block = dom.blocks[0] as MarkDownUnorderedListBlock;
+
+                if (block.items.length === 1) {
+                    const item = block.items[0];
+                    if (item.type === 'checkbox') {
+                        channel.appendLine(`${filePath}:${line.lineNumber + 1} ${item.check !== null ? 'DONE: ' : ''}${item.text.trim()}`);
+                    }
+                } else {
+                    // TODO: Telemetry.
+                    console.log(`Unexpected item count ${block.items.length}.`);
+                }
             }
-
-            return undefined;
-        }).filter(line => line !== undefined);
-
-        for (const line of lines) {
-            channel.appendLine(line!);
         }
     }
 
-    console.log('Updated');
     isUpdating = false;
 }
