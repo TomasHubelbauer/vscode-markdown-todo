@@ -1,5 +1,5 @@
 'use strict';
-import MarkDownDOM, { MarkDownUnorderedListBlock } from 'markdown-dom';
+import MarkDownDOM from 'markdown-dom';
 import { ExtensionContext, window, workspace, Uri, TreeDataProvider, TreeItem, Event, TextDocument, EventEmitter, TreeItemCollapsibleState, ThemeIcon, commands, Selection } from 'vscode';
 import * as path from 'path';
 
