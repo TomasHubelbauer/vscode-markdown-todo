@@ -1,6 +1,10 @@
 # Changelog
 
-## `4.0.0` (Unreleased)
+## `5.0.0` (Unreleased)
+
+- Group to-do items underneath MarkDown headers in the tree view
+
+## `4.0.0` (2018-04-22)
 
 - Filter to only files that have to-do items
 - Fix a bug where nested list items we're inspected to to-do items
