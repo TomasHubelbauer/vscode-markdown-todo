@@ -18,7 +18,57 @@
         "workspaceContains:**/*.md"
     ],
     "main": "./out/extension",
-    "contributes": {},
+    "contributes": {
+        "commands":[
+            {
+                "command": "markdown-todo.openFile",
+                "title": "Open file"
+            },
+            {
+                "command": "markdown-todo.focusTodo",
+                "title": "Focus to-do"
+            },
+            {
+                "command": "markdown-todo.refreshFile",
+                "title": "Refresh file"
+            },
+            {
+                "command": "markdown-todo.removeTodo",
+                "title": "Remove to-do"
+            },
+            {
+                "command": "markdown-todo.toggleTodo",
+                "title": "Toggle to-do"
+            }
+        ],
+        "views": {
+            "explorer": [
+                {
+                    "id": "to-do",
+                    "name": "MarkDown To-Do"
+                }
+            ]
+        },
+        "menus": {
+            "view/item/context": [
+                {
+                    "group": "navigation",
+                    "command": "markdown-todo.refreshFile",
+                    "when": "viewItem == file"
+                },
+                {
+                    "group": "navigation",
+                    "command": "markdown-todo.removeTodo",
+                    "when": "viewItem == todo"
+                },
+                {
+                    "group": "navigation",
+                    "command": "markdown-todo.toggleTodo",
+                    "when": "viewItem == todo"
+                }
+            ]
+        }
+    },
     "scripts": {
         "vscode:prepublish": "npm run compile",
         "compile": "tsc -p ./",
