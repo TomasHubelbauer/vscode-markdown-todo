@@ -200,7 +200,7 @@ class TodoTreeDataProvider implements TreeDataProvider<Item> {
             }
         }
 
-        if (headlessTodos.length > 0 || heads.length > 0) {
+        if (headlessTodos.length > 0 || heads.reduce((count, head) => count + head.todos.length, 0) > 0) {
             const path = textDocument.uri.fsPath;
             let file = this.cache.find(item => item.type === 'file' && item.path === path);
             if (file === undefined) {
