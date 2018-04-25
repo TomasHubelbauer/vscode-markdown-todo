@@ -138,13 +138,11 @@ class TodoTreeDataProvider implements TreeDataProvider<Item> {
 
     async refreshAll() {
         this.cache = [];
-        const files = await workspace.findFiles('**/*.md', undefined); // https://github.com/Microsoft/vscode/issues/47645
-        for (const file of files) {
-            // TODO: Figure out https://github.com/Microsoft/vscode/issues/48674
-            if (file.fsPath.includes('node_modules')) {
-                continue;
-            }
 
+        // https://github.com/Microsoft/vscode/issues/48674
+        // https://github.com/Microsoft/vscode/issues/47645
+        const files = await workspace.findFiles('**/*.md', undefined); 
+        for (const file of files) {
             const textDocument = await workspace.openTextDocument(file);
             this.refresh(textDocument);
         }
