@@ -1,5 +1,9 @@
 # Changelog
 
+## `5.0.4` (2018-04-25)
+
+Hide entries with no to-do items.
+
 ## `5.0.3` (2018-04-23)
 
 Exclude default exclusions when looking for workspace MarkDown files.
