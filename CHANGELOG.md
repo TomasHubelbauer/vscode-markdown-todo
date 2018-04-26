@@ -1,5 +1,9 @@
 # Changelog
 
+## `5.0.5` (2018-04-26)
+
+Exclude `files.exclude` specifically.
+
 ## `5.0.4` (2018-04-25)
 
 Hide entries with no to-do items.
