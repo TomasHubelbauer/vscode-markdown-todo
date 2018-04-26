@@ -1,6 +1,6 @@
 'use strict';
 import MarkDownDOM from 'markdown-dom';
-import { ExtensionContext, window, workspace, Uri, TreeDataProvider, TreeItem, Event, TextDocument, EventEmitter, TreeItemCollapsibleState, ThemeIcon, commands, Selection, Range } from 'vscode';
+import { ExtensionContext, window, workspace, Uri, TreeDataProvider, TreeItem, Event, TextDocument, EventEmitter, TreeItemCollapsibleState, ThemeIcon, commands, Selection, Range, RelativePattern } from 'vscode';
 import * as path from 'path';
 
 type File = { type: 'file'; path: string; headlessTodos: Todo[]; heads: Head[]; };
@@ -139,11 +139,22 @@ class TodoTreeDataProvider implements TreeDataProvider<Item> {
     async refreshAll() {
         this.cache = [];
 
-        // https://github.com/Microsoft/vscode/issues/48674
-        // https://github.com/Microsoft/vscode/issues/47645
-        const files = await workspace.findFiles('**/*.md', undefined); 
+        // TODO: https://github.com/Microsoft/vscode/issues/48674
+        const excludes = await workspace.getConfiguration('search').get('exclude')!;
+        const globs = Object.keys(excludes).map(exclude => new RelativePattern(workspace.workspaceFolders![0], exclude));
+        const occurences: { [fsPath: string]: number; } = {};
+        for (const glob of globs) {
+            // TODO: https://github.com/Microsoft/vscode/issues/47645
+            for (const file of await workspace.findFiles('**/*.md', glob)) {
+                occurences[file.fsPath] = (occurences[file.fsPath] || 0) + 1;
+            }
+        }
+
+        // Accept only files not excluded in any of the globs
+        const files = Object.keys(occurences).filter(fsPath => occurences[fsPath] === globs.length);
+        console.log(files);
         for (const file of files) {
-            const textDocument = await workspace.openTextDocument(file);
+            const textDocument = await workspace.openTextDocument(Uri.file(file));
             this.refresh(textDocument);
         }
     }
