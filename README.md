@@ -11,3 +11,5 @@ See the [CHANGELOG](CHANGELOG.md).
 ## Contributing
 
 See [todo](todo).
+
+[In the Marketplace](https://marketplace.visualstudio.com/items?itemName=TomasHubelbauer.vscode-markdown-todo)
