@@ -2,7 +2,7 @@
     "name": "vscode-markdown-todo",
     "displayName": "MarkDown To-Do",
     "description": "Collects MarkDown checkboxen in the workspace to an auto-updating Output pane channel",
-    "version": "5.0.5",
+    "version": "6.0.0",
     "publisher": "TomasHubelbauer",
     "repository": {
         "type": "git",
@@ -15,26 +15,15 @@
         "Other"
     ],
     "activationEvents": [
-        "workspaceContains:**/*.md"
+        "workspaceContains:**/*.md",
+        "onLanguage:markdown"
     ],
     "main": "./out/extension",
     "contributes": {
         "commands": [
             {
-                "command": "markdown-todo.openFile",
-                "title": "Open file"
-            },
-            {
-                "command": "markdown-todo.focusHead",
-                "title": "Focus header"
-            },
-            {
                 "command": "markdown-todo.focusTodo",
                 "title": "Focus to-do"
-            },
-            {
-                "command": "markdown-todo.refreshFile",
-                "title": "Refresh file"
             },
             {
                 "command": "markdown-todo.removeTodo",
@@ -55,11 +44,6 @@
         },
         "menus": {
             "view/item/context": [
-                {
-                    "group": "navigation",
-                    "command": "markdown-todo.refreshFile",
-                    "when": "viewItem == file"
-                },
                 {
                     "group": "navigation",
                     "command": "markdown-todo.removeTodo",

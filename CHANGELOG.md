@@ -1,5 +1,13 @@
 # Changelog
 
+## `6.0.0` (2018-05-08)
+
+- Use `fileSystemWatcher` instead of `findFiles` as the latter has been unreliable
+- Remove the *Open file* and *Focus header* commands as they interfered with the folding/unfolding behavior of the tree item ([a known VS Code issue](https://github.com/Microsoft/vscode/issues/34130))
+- Remove the *Refresh file* command as it should not be needed anymore (the file system watcher should be reliable)
+- Display checked, unchecked and total counts separately
+- Save files after toggling or removing to-do items
+
 ## `5.0.5` (2018-04-26)
 
 Exclude `files.exclude` specifically.
