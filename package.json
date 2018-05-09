@@ -2,7 +2,7 @@
     "name": "vscode-markdown-todo",
     "displayName": "MarkDown To-Do",
     "description": "Collects MarkDown checkboxen in the workspace to an auto-updating Output pane channel",
-    "version": "6.0.0",
+    "version": "6.0.1",
     "publisher": "TomasHubelbauer",
     "repository": {
         "type": "git",
@@ -22,16 +22,23 @@
     "contributes": {
         "commands": [
             {
-                "command": "markdown-todo.focusTodo",
-                "title": "Focus to-do"
+                "command": "markdown-todo.focus",
+                "title": "Focus"
             },
             {
-                "command": "markdown-todo.removeTodo",
-                "title": "Remove to-do"
+                "command": "markdown-todo.remove",
+                "title": "Remove",
+                "icon": "icon/remove.svg"
             },
             {
-                "command": "markdown-todo.toggleTodo",
-                "title": "Toggle to-do"
+                "command": "markdown-todo.tick",
+                "title": "Tick",
+                "icon": "icon/tick.svg"
+            },
+            {
+                "command": "markdown-todo.untick",
+                "title": "Untick",
+                "icon": "icon/untick.svg"
             }
         ],
         "views": {
@@ -45,13 +52,18 @@
         "menus": {
             "view/item/context": [
                 {
-                    "group": "navigation",
-                    "command": "markdown-todo.removeTodo",
+                    "group": "inline",
+                    "command": "markdown-todo.remove",
                     "when": "viewItem == todo"
                 },
                 {
-                    "group": "navigation",
-                    "command": "markdown-todo.toggleTodo",
+                    "group": "inline",
+                    "command": "markdown-todo.tick",
+                    "when": "viewItem == todo"
+                },
+                {
+                    "group": "inline",
+                    "command": "markdown-todo.untick",
                     "when": "viewItem == todo"
                 }
             ]

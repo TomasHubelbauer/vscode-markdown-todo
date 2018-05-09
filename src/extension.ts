@@ -12,14 +12,14 @@ type Todo = { type: typeof TodoType; text: string; isChecked: boolean; line: num
 type Item = File | Head | Todo;
 
 export async function activate(context: ExtensionContext): Promise<void> {
-    context.subscriptions.push(commands.registerCommand('markdown-todo.focusTodo', async (todo: Todo) => {
+    context.subscriptions.push(commands.registerCommand('markdown-todo.focus', async (todo: Todo) => {
         const textEditor = await window.showTextDocument(Uri.file(todo.file.path), { preview: true });
         const range = textEditor.document.lineAt(todo.line).range;
         textEditor.selection = new Selection(range.end, range.start);
         textEditor.revealRange(range);
     }));
 
-    context.subscriptions.push(commands.registerCommand('markdown-todo.removeTodo', async (todo: Todo) => {
+    context.subscriptions.push(commands.registerCommand('markdown-todo.remove', async (todo: Todo) => {
         const textEditor = await window.showTextDocument(Uri.file(todo.file.path), { preview: true });
         const range = textEditor.document.lineAt(todo.line).rangeIncludingLineBreak;
         textEditor.revealRange(range);
@@ -30,7 +30,7 @@ export async function activate(context: ExtensionContext): Promise<void> {
         await textEditor.document.save();
     }));
 
-    context.subscriptions.push(commands.registerCommand('markdown-todo.toggleTodo', async (todo: Todo) => {
+    context.subscriptions.push(commands.registerCommand('markdown-todo.tick', async (todo: Todo) => {
         const textEditor = await window.showTextDocument(Uri.file(todo.file.path), { preview: true });
         const range = textEditor.document.lineAt(todo.line).range;
         textEditor.revealRange(range);
@@ -40,7 +40,23 @@ export async function activate(context: ExtensionContext): Promise<void> {
             const checkStart = document.positionAt(document.offsetAt(range.start) + todo.indent.length + '- ['.length);
             const checkEnd = document.positionAt(document.offsetAt(range.start) + todo.indent.length + '- [?'.length);
             const checkRange = new Range(checkStart, checkEnd);
-            editBuilder.replace(checkRange, todo.isChecked ? ' ' : 'x');
+            editBuilder.replace(checkRange, 'x');
+        });
+
+        await textEditor.document.save();
+    }));
+
+    context.subscriptions.push(commands.registerCommand('markdown-todo.untick', async (todo: Todo) => {
+        const textEditor = await window.showTextDocument(Uri.file(todo.file.path), { preview: true });
+        const range = textEditor.document.lineAt(todo.line).range;
+        textEditor.revealRange(range);
+        await textEditor.edit(editBuilder => {
+            const document = textEditor.document;
+            // TODO: Verify this won't break with -[ which we I guess support (use indexOf otherwise or improve MarkDownDOM to give this)
+            const checkStart = document.positionAt(document.offsetAt(range.start) + todo.indent.length + '- ['.length);
+            const checkEnd = document.positionAt(document.offsetAt(range.start) + todo.indent.length + '- [?'.length);
+            const checkRange = new Range(checkStart, checkEnd);
+            editBuilder.replace(checkRange, ' ');
         });
 
         await textEditor.document.save();
@@ -107,8 +123,8 @@ class TodoTreeDataProvider implements TreeDataProvider<Item> {
                 return item;
             }
             case 'todo': {
-                const item = new TreeItem(element.isChecked ? 'DONE: ' + element.text : element.text);
-                item.command = { title: 'Focus todo', command: 'markdown-todo.focusTodo', arguments: [element] };
+                const item = new TreeItem(element.isChecked ? '✓ ' + element.text : element.text);
+                item.command = { title: 'Focus todo', command: 'markdown-todo.focus', arguments: [element] };
                 item.contextValue = 'todo';
                 item.iconPath = ThemeIcon.File;
                 item.id = element.file.path + ':' + element.line;

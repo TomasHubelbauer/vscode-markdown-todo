@@ -1,5 +1,11 @@
 # Changelog
 
+## `6.0.1` (2018-05-09)
+
+- Split the toggle command into two *Tick* and *Untick* commands
+- Display graphical icons to the right of the to-do items in the tree instead of in the context menu
+- Introduce also an icon for the *Remove* command and show that command in the tree as well
+
 ## `6.0.0` (2018-05-08)
 
 - Use `fileSystemWatcher` instead of `findFiles` as the latter has been unreliable
