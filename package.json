@@ -1,7 +1,7 @@
 {
     "name": "vscode-markdown-todo",
     "displayName": "MarkDown To-Do",
-    "description": "Collects MarkDown checkboxen in the workspace to an auto-updating Output pane channel",
+    "description": "Collects to-do items in MarkDown files to an Explorer tree view with contextual menues for toggling and removing to-do items and keeps the tree view up-to-date as to-do items are inserted, updated and deleted in any MarkDown file in the workspace.",
     "version": "6.0.1",
     "publisher": "TomasHubelbauer",
     "repository": {
