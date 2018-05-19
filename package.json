@@ -7,7 +7,11 @@
     "categories": [
         "Programming Languages"
     ],
-    "keywords": ["markdown", "todo", "todo-list"],
+    "keywords": [
+        "markdown",
+        "todo",
+        "todo-list"
+    ],
     "publisher": "TomasHubelbauer",
     "repository": {
         "type": "git",
@@ -16,9 +20,6 @@
     "engines": {
         "vscode": "^1.22.0"
     },
-    "categories": [
-        "Other"
-    ],
     "activationEvents": [
         "workspaceContains:**/*.md",
         "onLanguage:markdown"
@@ -44,6 +45,11 @@
                 "command": "markdown-todo.untick",
                 "title": "Untick",
                 "icon": "icon/untick.svg"
+            },
+            {
+                "command": "markdown-todo.refresh",
+                "title": "Refresh",
+                "icon": "icon/refresh.svg"
             }
         ],
         "views": {
@@ -55,6 +61,12 @@
             ]
         },
         "menus": {
+            "view/title": [
+                {
+                    "group": "navigation",
+                    "command": "markdown-todo.refresh"
+                }
+            ],
             "view/item/context": [
                 {
                     "group": "inline",

@@ -12,6 +12,12 @@ type Todo = { type: typeof TodoType; text: string; isChecked: boolean; line: num
 type Item = File | Head | Todo;
 
 export async function activate(context: ExtensionContext): Promise<void> {
+    const todoTreeDataProvider = new TodoTreeDataProvider();
+
+    context.subscriptions.push(commands.registerCommand('markdown-todo.refresh', () => {
+        todoTreeDataProvider.reload();
+    }));
+
     context.subscriptions.push(commands.registerCommand('markdown-todo.focus', async (todo: Todo) => {
         const textEditor = await window.showTextDocument(Uri.file(todo.file.path), { preview: true });
         const range = textEditor.document.lineAt(todo.line).range;
@@ -62,7 +68,6 @@ export async function activate(context: ExtensionContext): Promise<void> {
         await textEditor.document.save();
     }));
 
-    const todoTreeDataProvider = new TodoTreeDataProvider();
     context.subscriptions.push(todoTreeDataProvider);
     context.subscriptions.push(window.createTreeView('to-do', { treeDataProvider: todoTreeDataProvider }));
 }
@@ -152,6 +157,11 @@ class TodoTreeDataProvider implements TreeDataProvider<Item> {
         }
 
         // Todos do not have children.
+    }
+
+    public reload() {
+        this.cache = [];
+        this.index();
     }
 
     private async index() {
