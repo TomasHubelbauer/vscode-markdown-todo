@@ -1,7 +1,8 @@
 'use strict';
 import MarkDownDOM from 'markdown-dom';
-import { ExtensionContext, window, workspace, Uri, TreeDataProvider, TreeItem, TextDocument, EventEmitter, TreeItemCollapsibleState, ThemeIcon, commands, Selection, Range, RelativePattern, FileSystemWatcher } from 'vscode';
+import { ExtensionContext, window, workspace, Uri, TreeDataProvider, TreeItem, TextDocument, EventEmitter, TreeItemCollapsibleState, ThemeIcon, commands, Selection, Range, RelativePattern, FileSystemWatcher, languages, CodeLensProvider, Event, CancellationToken, CodeLens } from 'vscode';
 import * as path from 'path';
+import * as child_process from 'child_process';
 
 const FileType: 'file' = 'file';
 type File = { type: typeof FileType; path: string; headlessTodos: Todo[]; heads: Head[]; };
@@ -29,6 +30,7 @@ export async function activate(context: ExtensionContext): Promise<void> {
         textEditor.revealRange(range);
     }));
 
+    // TODO: `path`, `line` to be calleable from both tree view and code lens
     context.subscriptions.push(commands.registerCommand('markdown-todo.remove', async (todo: Todo) => {
         const textEditor = await window.showTextDocument(Uri.file(todo.file.path), { preview: true });
         const range = textEditor.document.lineAt(todo.line).rangeIncludingLineBreak;
@@ -40,6 +42,7 @@ export async function activate(context: ExtensionContext): Promise<void> {
         await textEditor.document.save();
     }));
 
+    // TODO: `path`, `line`, `indent` to be calleable from both tree view and code lens
     context.subscriptions.push(commands.registerCommand('markdown-todo.tick', async (todo: Todo) => {
         const textEditor = await window.showTextDocument(Uri.file(todo.file.path), { preview: true });
         const range = textEditor.document.lineAt(todo.line).range;
@@ -56,6 +59,7 @@ export async function activate(context: ExtensionContext): Promise<void> {
         await textEditor.document.save();
     }));
 
+    // TODO: `path`, `line`, `indent` to be calleable from both tree view and code lens
     context.subscriptions.push(commands.registerCommand('markdown-todo.untick', async (todo: Todo) => {
         const textEditor = await window.showTextDocument(Uri.file(todo.file.path), { preview: true });
         const range = textEditor.document.lineAt(todo.line).range;
@@ -74,6 +78,7 @@ export async function activate(context: ExtensionContext): Promise<void> {
 
     context.subscriptions.push(todoTreeDataProvider);
     context.subscriptions.push(window.createTreeView('to-do', { treeDataProvider: todoTreeDataProvider }));
+    context.subscriptions.push(languages.registerCodeLensProvider({ language: 'markdown' }, new TodoCodeLensProvider()));
 }
 
 class TodoTreeDataProvider implements TreeDataProvider<Item> {
@@ -295,5 +300,92 @@ class TodoTreeDataProvider implements TreeDataProvider<Item> {
         delete this.cache;
         this._onDidChangeTreeData.dispose();
         this.watcher.dispose();
+    }
+}
+
+class TodoCodeLensProvider implements CodeLensProvider {
+    onDidChangeCodeLenses?: Event<void> | undefined;
+
+    provideCodeLenses(document: TextDocument, token: CancellationToken): CodeLens[] {
+        const lenses: CodeLens[] = [];
+        for (let index = 0; index < document.lineCount; index++) {
+            const line = document.lineAt(index);
+            const dom = MarkDownDOM.parse(line.text.trim());
+            if (dom.blocks && dom.blocks.length === 1) {
+                const block = dom.blocks[0];
+                if (block.type === 'unordered-list' && block.items.length === 1) {
+                    const item = block.items[0];
+                    if (item.type === 'checkbox') {
+                        lenses.push(new TodoCodeLens(line.range, document.uri.fsPath));
+                        lenses.push(new CodeLens(line.range, {
+                            title: 'Remove',
+                            command: 'markdown-todo.remove',
+                            arguments: [document.uri.fsPath, line.lineNumber]
+                        }));
+
+                        // TODO: Figure out why item.indent is always zero
+                        const indent = (/^\s+/.exec(line.text) || [''])[0];
+                        if (item.check !== null) {
+                            lenses.push(new CodeLens(line.range, {
+                                title: 'Untick',
+                                command: 'markdown-todo.untick',
+                                arguments: [document.uri.fsPath, line.lineNumber, indent]
+                            }));
+                        } else {
+                            lenses.push(new CodeLens(line.range, {
+                                title: 'Tick',
+                                command: 'markdown-todo.tick',
+                                arguments: [document.uri.fsPath, line.lineNumber, indent]
+                            }));
+                        }
+                    }
+                }
+
+            }
+        }
+
+        return lenses;
+    }
+
+    async resolveCodeLens(codeLens: CodeLens, token: CancellationToken): Promise<CodeLens> {
+        if (codeLens instanceof TodoCodeLens && codeLens.age === undefined) {
+            const workspaceDirectoryPath = workspace.workspaceFolders![0].uri.fsPath;
+            const absoluteFilePath = codeLens.path;
+            const relativeFilePath = path.relative(workspaceDirectoryPath, absoluteFilePath);
+            const { stdout, stderr } = await new Promise<{ stdout: string, stderr: string }>((resolve, reject) => {
+                child_process.exec(
+                    `git --no-pager blame -pL ${codeLens.range.start.line + 1},${codeLens.range.start.line + 1} -- ${relativeFilePath}`,
+                    { cwd: workspaceDirectoryPath },
+                    (error, stdout, stderr) => {
+                        if (!!error) {
+                            reject(error);
+                            return;
+                        }
+
+                        resolve({ stdout, stderr });
+                    },
+                );
+            });
+
+            if (stderr) {
+                return codeLens;
+            }
+
+            const dateAndTimeRaw = stdout.split('\n').find(line => line.startsWith('author-time'))!.split(' ')[1];
+            const dateAndTime = new Date(Number(dateAndTimeRaw) * 1000);
+            codeLens.command = { title: dateAndTime.toLocaleString(), command: '' };
+            return codeLens;
+        }
+
+        return codeLens;
+    }
+}
+
+class TodoCodeLens extends CodeLens {
+    public age?: string;
+    public readonly path: string;
+    constructor(range: Range, path: string) {
+        super(range);
+        this.path = path;
     }
 }
