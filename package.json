@@ -54,7 +54,7 @@
             {
                 "command": "markdown-todo.toggleTicked",
                 "title": "Toggle ✓ display",
-                "icon": "icon/refresh.svg"
+                "icon": "icon/toggleTicked.svg"
             }
         ],
         "views": {
@@ -69,11 +69,11 @@
             "view/title": [
                 {
                     "group": "navigation",
-                    "command": "markdown-todo.toggleTicked"
+                    "command": "markdown-todo.refresh"
                 },
                 {
                     "group": "navigation",
-                    "command": "markdown-todo.refresh"
+                    "command": "markdown-todo.toggleTicked"
                 }
             ],
             "view/item/context": [

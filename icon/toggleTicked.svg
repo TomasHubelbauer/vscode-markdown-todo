@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="3 3 16 16">
+  <style>
+    .tick { fill: white; font: normal 16px sans-serif; }
+  </style>
+  <text x="0" y="16" class="tick">✓</text>
+</svg>
