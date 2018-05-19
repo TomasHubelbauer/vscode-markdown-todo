@@ -1,7 +1,7 @@
 # MarkDown To-Do
 
 - [ ] Do this
-- [x] Do that
+- [ ] Do that
 
 ## Features
 

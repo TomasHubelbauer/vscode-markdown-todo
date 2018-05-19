@@ -80,17 +80,22 @@
                 {
                     "group": "inline",
                     "command": "markdown-todo.remove",
-                    "when": "viewItem == todo"
+                    "when": "viewItem == todo-unticked"
+                },
+                {
+                    "group": "inline",
+                    "command": "markdown-todo.remove",
+                    "when": "viewItem == todo-ticked"
                 },
                 {
                     "group": "inline",
                     "command": "markdown-todo.tick",
-                    "when": "viewItem == todo"
+                    "when": "viewItem == todo-unticked"
                 },
                 {
                     "group": "inline",
                     "command": "markdown-todo.untick",
-                    "when": "viewItem == todo"
+                    "when": "viewItem == todo-ticked"
                 }
             ]
         }

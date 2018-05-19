@@ -4,6 +4,8 @@
 
 - [ ] Document the refresh command
 - [ ] Document the toggle ticked command
+- [ ] Document code lens with date and time and contextual commands
+- [ ] Document changed logic which now shows only the applicable comamnd in tree view context
 
 ## `6.0.1` (2018-05-09)
 

@@ -184,7 +184,7 @@ class TodoTreeDataProvider implements TreeDataProvider<Item> {
             case 'todo': {
                 const item = new TreeItem(element.isChecked ? '✓ ' + element.text : element.text);
                 item.command = { title: 'Focus todo', command: 'markdown-todo.focus', arguments: [element] };
-                item.contextValue = 'todo';
+                item.contextValue = 'todo-' + (element.isChecked ? 'ticked' : 'unticked');
                 item.iconPath = ThemeIcon.File;
                 item.id = element.file.path + ':' + element.line;
                 item.tooltip = element.text;
