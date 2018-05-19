@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- [ ] Document the refresh command
+- [ ] Document the toggle ticked command
+
 ## `6.0.1` (2018-05-09)
 
 - Split the toggle command into two *Tick* and *Untick* commands

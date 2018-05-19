@@ -50,6 +50,11 @@
                 "command": "markdown-todo.refresh",
                 "title": "Refresh",
                 "icon": "icon/refresh.svg"
+            },
+            {
+                "command": "markdown-todo.toggleTicked",
+                "title": "Toggle ✓ display",
+                "icon": "icon/refresh.svg"
             }
         ],
         "views": {
@@ -62,6 +67,10 @@
         },
         "menus": {
             "view/title": [
+                {
+                    "group": "navigation",
+                    "command": "markdown-todo.toggleTicked"
+                },
                 {
                     "group": "navigation",
                     "command": "markdown-todo.refresh"

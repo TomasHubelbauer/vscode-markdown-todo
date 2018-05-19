@@ -18,6 +18,10 @@ export async function activate(context: ExtensionContext): Promise<void> {
         todoTreeDataProvider.reload();
     }));
 
+    context.subscriptions.push(commands.registerCommand('markdown-todo.toggleTicked', () => {
+        todoTreeDataProvider.displayTicked = !todoTreeDataProvider.displayTicked;
+    }));
+
     context.subscriptions.push(commands.registerCommand('markdown-todo.focus', async (todo: Todo) => {
         const textEditor = await window.showTextDocument(Uri.file(todo.file.path), { preview: true });
         const range = textEditor.document.lineAt(todo.line).range;
@@ -75,6 +79,7 @@ export async function activate(context: ExtensionContext): Promise<void> {
 class TodoTreeDataProvider implements TreeDataProvider<Item> {
     private cache: Item[] = [];
     private _onDidChangeTreeData: EventEmitter<Item | undefined> = new EventEmitter<Item | undefined>();
+    private _displayTicked = true;
     public readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
 
     private readonly watcher: FileSystemWatcher;
@@ -153,10 +158,19 @@ class TodoTreeDataProvider implements TreeDataProvider<Item> {
         }
 
         if (element.type === 'head') {
-            return element.todos;
+            return this._displayTicked ? element.todos : element.todos.filter(todo => !todo.isChecked);
         }
 
         // Todos do not have children.
+    }
+
+    public get displayTicked() {
+        return this._displayTicked;
+    }
+
+    public set displayTicked(value: boolean) {
+        this._displayTicked = value;
+        this._onDidChangeTreeData.fire();
     }
 
     public reload() {
