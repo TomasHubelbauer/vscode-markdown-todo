@@ -80,12 +80,7 @@
                 {
                     "group": "inline",
                     "command": "markdown-todo.remove",
-                    "when": "viewItem == todo-unticked"
-                },
-                {
-                    "group": "inline",
-                    "command": "markdown-todo.remove",
-                    "when": "viewItem == todo-ticked"
+                    "when": "viewItem =~ /todo-(un)?ticked/"
                 },
                 {
                     "group": "inline",
