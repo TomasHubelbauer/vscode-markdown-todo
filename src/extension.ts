@@ -14,6 +14,7 @@ type Item = File | Head | Todo;
 
 export async function activate(context: ExtensionContext): Promise<void> {
     const todoTreeDataProvider = new TodoTreeDataProvider();
+    const todoCodeLensProvider = new TodoCodeLensProvider();
 
     context.subscriptions.push(commands.registerCommand('markdown-todo.refresh', () => {
         todoTreeDataProvider.reload();
@@ -30,55 +31,98 @@ export async function activate(context: ExtensionContext): Promise<void> {
         textEditor.revealRange(range);
     }));
 
-    // TODO: `path`, `line` to be calleable from both tree view and code lens
-    context.subscriptions.push(commands.registerCommand('markdown-todo.remove', async (todo: Todo) => {
-        const textEditor = await window.showTextDocument(Uri.file(todo.file.path), { preview: true });
-        const range = textEditor.document.lineAt(todo.line).rangeIncludingLineBreak;
-        textEditor.revealRange(range);
-        await textEditor.edit(editBuilder => {
-            editBuilder.replace(range, '');
-        });
-
-        await textEditor.document.save();
-    }));
-
-    // TODO: `path`, `line`, `indent` to be calleable from both tree view and code lens
-    context.subscriptions.push(commands.registerCommand('markdown-todo.tick', async (todo: Todo) => {
-        const textEditor = await window.showTextDocument(Uri.file(todo.file.path), { preview: true });
-        const range = textEditor.document.lineAt(todo.line).range;
-        textEditor.revealRange(range);
-        await textEditor.edit(editBuilder => {
-            const document = textEditor.document;
-            // TODO: Verify this won't break with -[ which we I guess support (use indexOf otherwise or improve MarkDownDOM to give this)
-            const checkStart = document.positionAt(document.offsetAt(range.start) + todo.indent.length + '- ['.length);
-            const checkEnd = document.positionAt(document.offsetAt(range.start) + todo.indent.length + '- [?'.length);
-            const checkRange = new Range(checkStart, checkEnd);
-            editBuilder.replace(checkRange, 'x');
-        });
-
-        await textEditor.document.save();
-    }));
-
-    // TODO: `path`, `line`, `indent` to be calleable from both tree view and code lens
-    context.subscriptions.push(commands.registerCommand('markdown-todo.untick', async (todo: Todo) => {
-        const textEditor = await window.showTextDocument(Uri.file(todo.file.path), { preview: true });
-        const range = textEditor.document.lineAt(todo.line).range;
-        textEditor.revealRange(range);
-        await textEditor.edit(editBuilder => {
-            const document = textEditor.document;
-            // TODO: Verify this won't break with -[ which we I guess support (use indexOf otherwise or improve MarkDownDOM to give this)
-            const checkStart = document.positionAt(document.offsetAt(range.start) + todo.indent.length + '- ['.length);
-            const checkEnd = document.positionAt(document.offsetAt(range.start) + todo.indent.length + '- [?'.length);
-            const checkRange = new Range(checkStart, checkEnd);
-            editBuilder.replace(checkRange, ' ');
-        });
-
-        await textEditor.document.save();
-    }));
+    context.subscriptions.push(commands.registerCommand('markdown-todo.remove', remove));
+    context.subscriptions.push(commands.registerCommand('markdown-todo.tick', tick));
+    context.subscriptions.push(commands.registerCommand('markdown-todo.untick', untick));
 
     context.subscriptions.push(todoTreeDataProvider);
     context.subscriptions.push(window.createTreeView('to-do', { treeDataProvider: todoTreeDataProvider }));
-    context.subscriptions.push(languages.registerCodeLensProvider({ language: 'markdown' }, new TodoCodeLensProvider()));
+    context.subscriptions.push(languages.registerCodeLensProvider({ language: 'markdown' }, todoCodeLensProvider));
+}
+
+async function remove(todo: Todo): Promise<void>;
+async function remove(path: string, line: number): Promise<void>;
+async function remove(todoOrPath: Todo | string, ln?: number): Promise<void> {
+    let path: string;
+    let line: number;
+    if (typeof todoOrPath === 'string') {
+        path = todoOrPath;
+        line = ln!;
+    } else {
+        path = todoOrPath.file.path;
+        line = todoOrPath.line;
+    }
+
+    const textEditor = await window.showTextDocument(Uri.file(path), { preview: true });
+    const range = textEditor.document.lineAt(line).rangeIncludingLineBreak;
+    textEditor.revealRange(range);
+    await textEditor.edit(editBuilder => {
+        editBuilder.replace(range, '');
+    });
+
+    await textEditor.document.save();
+}
+
+async function tick(todo: Todo): Promise<void>;
+async function tick(path: string, line: number, indent: string): Promise<void>;
+async function tick(todoOrPath: Todo | string, ln?: number, ind?: string): Promise<void> {
+    let path: string;
+    let line: number;
+    let indent: string;
+    if (typeof todoOrPath === 'string') {
+        path = todoOrPath;
+        line = ln!;
+        indent = ind!;
+    } else {
+        path = todoOrPath.file.path;
+        line = todoOrPath.line;
+        indent = todoOrPath.indent;
+    }
+
+    const textEditor = await window.showTextDocument(Uri.file(path), { preview: true });
+    const range = textEditor.document.lineAt(line).range;
+    textEditor.revealRange(range);
+    await textEditor.edit(editBuilder => {
+        const document = textEditor.document;
+        // TODO: Verify this won't break with -[ which we I guess support (use indexOf otherwise or improve MarkDownDOM to give this)
+        const checkStart = document.positionAt(document.offsetAt(range.start) + indent.length + '- ['.length);
+        const checkEnd = document.positionAt(document.offsetAt(range.start) + indent.length + '- [?'.length);
+        const checkRange = new Range(checkStart, checkEnd);
+        editBuilder.replace(checkRange, 'x');
+    });
+
+    await textEditor.document.save();
+}
+
+async function untick(todo: Todo): Promise<void>;
+async function untick(path: string, line: number, indent: string): Promise<void>;
+async function untick(todoOrPath: Todo | string, ln?: number, ind?: string): Promise<void> {
+    let path: string;
+    let line: number;
+    let indent: string;
+    if (typeof todoOrPath === 'string') {
+        path = todoOrPath;
+        line = ln!;
+        indent = ind!;
+    } else {
+        path = todoOrPath.file.path;
+        line = todoOrPath.line;
+        indent = todoOrPath.indent;
+    }
+
+    const textEditor = await window.showTextDocument(Uri.file(path), { preview: true });
+    const range = textEditor.document.lineAt(line).range;
+    textEditor.revealRange(range);
+    await textEditor.edit(editBuilder => {
+        const document = textEditor.document;
+        // TODO: Verify this won't break with -[ which we I guess support (use indexOf otherwise or improve MarkDownDOM to give this)
+        const checkStart = document.positionAt(document.offsetAt(range.start) + indent.length + '- ['.length);
+        const checkEnd = document.positionAt(document.offsetAt(range.start) + indent.length + '- [?'.length);
+        const checkRange = new Range(checkStart, checkEnd);
+        editBuilder.replace(checkRange, ' ');
+    });
+
+    await textEditor.document.save();
 }
 
 class TodoTreeDataProvider implements TreeDataProvider<Item> {
