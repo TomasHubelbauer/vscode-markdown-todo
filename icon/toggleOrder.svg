@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+  <line x1="4" y1="2" x2="4" y2="15" stroke="white" stroke-width="1" />
+  <line x1="1" y1="4" x2="4" y2="2" stroke="white" stroke-width="1" />
+
+  <line x1="7" y1="2" x2="7" y2="15" stroke="white" stroke-width="1" />
+  <line x1="10" y1="13" x2="7" y2="15" stroke="white" stroke-width="1" />
+
+  <style>.t { font: bold 8px sans-serif; fill: white; }</style>
+  <text x="9" y="8" class="t">A</text>
+  <text x="10" y="15" class="t">1</text>
+</svg>

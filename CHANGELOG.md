@@ -1,11 +1,14 @@
 # Changelog
 
-## Unreleased
+## `7.0.0` (2018-05-19)
 
-- [ ] Document the refresh command
-- [ ] Document the toggle ticked command
-- [ ] Document code lens with date and time and contextual commands
-- [ ] Document changed logic which now shows only the applicable comamnd in tree view context
+- Contribute a refresh command to the MarkDown To-Do tree view title context (reflects even unsaved changes)
+- Contribute a toggle ticked command to the MarkDown To-Do tree view title context (whether to show ticked or not)
+- Implement code lens for MarkDow checkboxes with contextual tick/untick command, remove command and date and time of line commit
+- Display contextual tick/untick command only, not both, in the MarkDown To-Do tree view to-do item context
+- Contribute a toggle sort order command to the MarkDown To-Do tree view title context:
+  - Sort by file name and header order in document
+  - Sort by unticked to-do item count
 
 ## `6.0.1` (2018-05-09)
 

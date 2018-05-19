@@ -17,11 +17,15 @@ export async function activate(context: ExtensionContext): Promise<void> {
     const todoCodeLensProvider = new TodoCodeLensProvider();
 
     context.subscriptions.push(commands.registerCommand('markdown-todo.refresh', () => {
-        todoTreeDataProvider.reload();
+        todoTreeDataProvider.reindex();
     }));
 
     context.subscriptions.push(commands.registerCommand('markdown-todo.toggleTicked', () => {
         todoTreeDataProvider.displayTicked = !todoTreeDataProvider.displayTicked;
+    }));
+
+    context.subscriptions.push(commands.registerCommand('markdown-todo.toggleOrder', () => {
+        todoTreeDataProvider.sortByCount = !todoTreeDataProvider.sortByCount;
     }));
 
     context.subscriptions.push(commands.registerCommand('markdown-todo.focus', async (todo: Todo) => {
@@ -38,6 +42,12 @@ export async function activate(context: ExtensionContext): Promise<void> {
     context.subscriptions.push(todoTreeDataProvider);
     context.subscriptions.push(window.createTreeView('to-do', { treeDataProvider: todoTreeDataProvider }));
     context.subscriptions.push(languages.registerCodeLensProvider({ language: 'markdown' }, todoCodeLensProvider));
+
+    workspace.onDidChangeConfiguration(event => {
+        if (event.affectsConfiguration('markdown-todo.sortByCount')) {
+            todoTreeDataProvider.reraise();
+        }
+    });
 }
 
 async function remove(todo: Todo): Promise<void>;
@@ -126,7 +136,8 @@ async function untick(todoOrPath: Todo | string, ln?: number, ind?: string): Pro
 }
 
 class TodoTreeDataProvider implements TreeDataProvider<Item> {
-    private cache: Item[] = [];
+    // Type as an array of `File`s as only files are kept at the top level
+    private cache: File[] = [];
     private _onDidChangeTreeData: EventEmitter<Item | undefined> = new EventEmitter<Item | undefined>();
     private _displayTicked = true;
     public readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
@@ -145,7 +156,7 @@ class TodoTreeDataProvider implements TreeDataProvider<Item> {
         });
 
         this.watcher.onDidDelete(uri => {
-            const index = this.cache.findIndex(item => item.type === 'file' && item.path === uri.fsPath);
+            const index = this.cache.findIndex(file => file.path === uri.fsPath);
             this.cache.splice(index, 1);
             this._onDidChangeTreeData.fire();
         });
@@ -199,10 +210,22 @@ class TodoTreeDataProvider implements TreeDataProvider<Item> {
 
     public getChildren(element?: Item | undefined) {
         if (element === undefined) {
-            return this.cache.map(file => file);
+            if (this.sortByCount) {
+                return this.cache.slice().sort((a, b) => {
+                    const aCount = this.count(a.headlessTodos).unchecked + a.heads.reduce((count, head) => count + this.count(head.todos).unchecked, 0);
+                    const bCount = this.count(b.headlessTodos).unchecked + b.heads.reduce((count, head) => count + this.count(head.todos).unchecked, 0);
+                    return bCount - aCount;
+                });
+            }
+
+            return this.cache as Item[];
         }
 
         if (element.type === 'file') {
+            if (this.sortByCount) {
+                return [...element.headlessTodos, ...element.heads.slice().sort((a, b) => this.count(b.todos).unchecked - this.count(a.todos).unchecked)];
+            }
+
             return [...element.headlessTodos, ...element.heads];
         }
 
@@ -222,9 +245,22 @@ class TodoTreeDataProvider implements TreeDataProvider<Item> {
         this._onDidChangeTreeData.fire();
     }
 
-    public reload() {
+    public get sortByCount() {
+        const { sortByCount } = workspace.getConfiguration('markdown-todo');
+        return !!sortByCount;
+    }
+
+    public set sortByCount(value: boolean) {
+        workspace.getConfiguration('markdown-todo').update('sortByCount', value);
+    }
+
+    public reindex() {
         this.cache = [];
         this.index();
+    }
+
+    public reraise() {
+        this._onDidChangeTreeData.fire();
     }
 
     private async index() {
@@ -251,7 +287,7 @@ class TodoTreeDataProvider implements TreeDataProvider<Item> {
 
     private refresh(textDocument: TextDocument) {
         const path = textDocument.uri.fsPath;
-        const index = this.cache.findIndex(item => item.type === 'file' && item.path === path);
+        const index = this.cache.findIndex(file => file.path === path);
         let file = this.cache[index] as File | undefined;
         if (file !== undefined) {
             file.headlessTodos = [];
@@ -316,7 +352,12 @@ class TodoTreeDataProvider implements TreeDataProvider<Item> {
                 this.cache.splice(index, 1);
                 this._onDidChangeTreeData.fire();
             } else {
-                this._onDidChangeTreeData.fire(file);
+                // Sort all in case counts change and we sort by them
+                if (this.sortByCount) {
+                    this._onDidChangeTreeData.fire();
+                } else {
+                    this._onDidChangeTreeData.fire(file);
+                }
             }
         } else {
             // Do not include empty files

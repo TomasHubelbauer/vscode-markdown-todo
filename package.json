@@ -2,7 +2,7 @@
     "name": "vscode-markdown-todo",
     "displayName": "MarkDown To-Do",
     "description": "Collects to-do items in MarkDown files to an Explorer tree view with contextual menues for toggling and removing to-do items and keeps the tree view up-to-date as to-do items are inserted, updated and deleted in any MarkDown file in the workspace.",
-    "version": "6.0.1",
+    "version": "7.0.0",
     "license": "MIT",
     "categories": [
         "Programming Languages"
@@ -55,6 +55,11 @@
                 "command": "markdown-todo.toggleTicked",
                 "title": "Toggle ✓ display",
                 "icon": "icon/toggleTicked.svg"
+            },
+            {
+                "command": "markdown-todo.toggleOrder",
+                "title": "Toggle sort order (alphanumeric versus by unticked to-do item count)",
+                "icon": "icon/toggleOrder.svg"
             }
         ],
         "views": {
@@ -69,11 +74,15 @@
             "view/title": [
                 {
                     "group": "navigation",
-                    "command": "markdown-todo.refresh"
+                    "command": "markdown-todo.toggleTicked"
                 },
                 {
                     "group": "navigation",
-                    "command": "markdown-todo.toggleTicked"
+                    "command": "markdown-todo.toggleOrder"
+                },
+                {
+                    "group": "navigation",
+                    "command": "markdown-todo.refresh"
                 }
             ],
             "view/item/context": [
@@ -93,7 +102,18 @@
                     "when": "viewItem == todo-ticked"
                 }
             ]
-        }
+        },
+        "configuration": [
+            {
+                "title": "markdown-todo",
+                "properties": {
+                    "markdown-todo.sortByCount": {
+                        "type": "boolean",
+                        "default": true
+                    }
+                }
+            }
+        ]
     },
     "scripts": {
         "vscode:prepublish": "npm run compile",

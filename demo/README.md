@@ -12,5 +12,7 @@
 - Contributes a context menu command for removing and toggling to-do items
 - Indexes the workspace in memory after activation and displays the initial tree of workspace files, their headers and to-do items
 - Has in-tree icons for toggling and removing checkboxes
-- Contribute a command for refreshing (for projecting changes without saving)
-- Contriutes a command for toggling visibility of ticked to-do items in the tree view
+- Contributes a command for refreshing (for projecting changes without saving)
+- Contributes a command for toggling visibility of ticked to-do items in the tree view
+- Contributes a command for toggling between sorting by file name or file unticked checkbox count
+- Contributes a code lens for each MarkDown checkbox with commit date, remove command and contextual tick/untick command
