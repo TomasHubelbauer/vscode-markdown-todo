@@ -40,7 +40,8 @@ export async function activate(context: ExtensionContext): Promise<void> {
     context.subscriptions.push(commands.registerCommand('markdown-todo.untick', untick));
 
     context.subscriptions.push(todoTreeDataProvider);
-    context.subscriptions.push(window.createTreeView('to-do', { treeDataProvider: todoTreeDataProvider }));
+    context.subscriptions.push(window.createTreeView('to-do-explorer', { treeDataProvider: todoTreeDataProvider }));
+    context.subscriptions.push(window.createTreeView('to-do-view-container', { treeDataProvider: todoTreeDataProvider }));
     context.subscriptions.push(languages.registerCodeLensProvider({ language: 'markdown' }, todoCodeLensProvider));
 
     workspace.onDidChangeConfiguration(event => {

@@ -1,5 +1,9 @@
 # Changelog
 
+## `8.0.0` (2018-05-20)
+
+Contribute a custom view container with the MarkDown To-Do tree view.
+
 ## `7.0.1` (2018-05-20)
 
 Create an icon for the extension when shown in the VS Code Marketplace.
