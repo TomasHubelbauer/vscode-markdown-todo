@@ -1,5 +1,9 @@
 # Changelog
 
+## `7.0.1` (2018-05-20)
+
+Create an icon for the extension when shown in the VS Code Marketplace.
+
 ## `7.0.0` (2018-05-19)
 
 - Contribute a refresh command to the MarkDown To-Do tree view title context (reflects even unsaved changes)

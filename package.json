@@ -2,7 +2,7 @@
     "name": "vscode-markdown-todo",
     "displayName": "MarkDown To-Do",
     "description": "Collects to-do items in MarkDown files to an Explorer tree view with contextual menues for toggling and removing to-do items and keeps the tree view up-to-date as to-do items are inserted, updated and deleted in any MarkDown file in the workspace.",
-    "version": "7.0.0",
+    "version": "7.0.1",
     "license": "MIT",
     "categories": [
         "Programming Languages"
@@ -12,6 +12,7 @@
         "todo",
         "todo-list"
     ],
+    "icon": "icon.png",
     "publisher": "TomasHubelbauer",
     "repository": {
         "type": "git",
