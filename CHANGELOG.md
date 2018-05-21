@@ -79,7 +79,7 @@ Convert to a version which uses a tree view to collect the to-do items.
 
 ## `2.0.0` (2018-04-22)
 
-- Use MarkDownDOM to parse the unordered checkbox list blocks
+- Use [MarkDownDOM](https://gitlab.com/TomasHubelbauer/markdown-dom) to parse the unordered checkbox list blocks
 - Use `lineCount` and `lineAt` instead of my own regex to be 100 % compatible with VS Code behavior
 
 ## `1.0.0` (2018-04-11)
