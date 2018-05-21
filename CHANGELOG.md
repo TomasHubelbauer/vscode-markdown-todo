@@ -2,7 +2,8 @@
 
 ## Unreleased
 
-- Display the to-do checkbox age in the CodeLens next to the date.
+- Display the to-do checkbox age in the CodeLens next to the date
+- Hide the `done` portion of the tree view item label with counts if it is zero
 
 ## `8.0.0` (2018-05-20)
 

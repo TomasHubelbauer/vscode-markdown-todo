@@ -177,7 +177,8 @@ class TodoTreeDataProvider implements TreeDataProvider<Item> {
                 const checked = headlessCounts.checked + headfulCounts.checked;
                 const unchecked = headlessCounts.unchecked + headfulCounts.unchecked;
                 const total = checked + unchecked;
-                const item = new TreeItem(`${path.parse(element.path).name} (${checked} done, ${unchecked} to do, ${total} total)`, TreeItemCollapsibleState.Expanded);
+                const done = checked === 0 ? '' : `${checked} done, `;
+                const item = new TreeItem(`${path.parse(element.path).name} (${done}${unchecked} to do, ${total} total)`, TreeItemCollapsibleState.Expanded);
                 item.contextValue = 'file';
                 item.iconPath = ThemeIcon.Folder;
                 item.id = element.path;
@@ -187,7 +188,8 @@ class TodoTreeDataProvider implements TreeDataProvider<Item> {
             case 'head': {
                 const { checked, unchecked } = this.count(element.todos);
                 const total = checked + unchecked;
-                const item = new TreeItem(`${element.text} (${checked} done, ${unchecked} to do, ${total} total)`, TreeItemCollapsibleState.Expanded);
+                const done = checked === 0 ? '' : `${checked} done, `;
+                const item = new TreeItem(`${element.text} (${done}${unchecked} to do, ${total} total)`, TreeItemCollapsibleState.Expanded);
                 item.contextValue = 'head';
                 item.iconPath = ThemeIcon.Folder;
                 item.id = element.file.path + ':' + element.line;
