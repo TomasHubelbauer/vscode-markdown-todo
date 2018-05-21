@@ -4,6 +4,9 @@
 
 - Display the to-do checkbox age in the CodeLens next to the date
 - Hide the `done` portion of the tree view item label with counts if it is zero
+- Reveal to-do item checkboxes in the center of the editor after clicking
+  - The default caused issue with releaving outside of visible range
+  - The at-top option caused CodeLens for that item to be hidden
 
 ## `8.0.0` (2018-05-20)
 

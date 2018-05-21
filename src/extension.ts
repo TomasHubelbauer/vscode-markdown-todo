@@ -1,6 +1,6 @@
 'use strict';
 import MarkDownDOM from 'markdown-dom';
-import { ExtensionContext, window, workspace, Uri, TreeDataProvider, TreeItem, TextDocument, EventEmitter, TreeItemCollapsibleState, ThemeIcon, commands, Selection, Range, RelativePattern, FileSystemWatcher, languages, CodeLensProvider, Event, CancellationToken, CodeLens } from 'vscode';
+import { ExtensionContext, window, workspace, Uri, TreeDataProvider, TreeItem, TextDocument, EventEmitter, TreeItemCollapsibleState, ThemeIcon, commands, Selection, Range, RelativePattern, FileSystemWatcher, languages, CodeLensProvider, Event, CancellationToken, CodeLens, TextEditorLineNumbersStyle, TextEditorRevealType } from 'vscode';
 import * as path from 'path';
 import * as child_process from 'child_process';
 import * as ta from 'time-ago';
@@ -33,7 +33,7 @@ export async function activate(context: ExtensionContext): Promise<void> {
         const textEditor = await window.showTextDocument(Uri.file(todo.file.path), { preview: true });
         const range = textEditor.document.lineAt(todo.line).range;
         textEditor.selection = new Selection(range.end, range.start);
-        textEditor.revealRange(range);
+        textEditor.revealRange(range, TextEditorRevealType.InCenter);
     }));
 
     context.subscriptions.push(commands.registerCommand('markdown-todo.remove', remove));
@@ -67,7 +67,7 @@ async function remove(todoOrPath: Todo | string, ln?: number): Promise<void> {
 
     const textEditor = await window.showTextDocument(Uri.file(path), { preview: true });
     const range = textEditor.document.lineAt(line).rangeIncludingLineBreak;
-    textEditor.revealRange(range);
+    textEditor.revealRange(range, TextEditorRevealType.InCenter);
     await textEditor.edit(editBuilder => {
         editBuilder.replace(range, '');
     });
@@ -93,7 +93,7 @@ async function tick(todoOrPath: Todo | string, ln?: number, ind?: string): Promi
 
     const textEditor = await window.showTextDocument(Uri.file(path), { preview: true });
     const range = textEditor.document.lineAt(line).range;
-    textEditor.revealRange(range);
+    textEditor.revealRange(range, TextEditorRevealType.InCenter);
     await textEditor.edit(editBuilder => {
         const document = textEditor.document;
         // TODO: Verify this won't break with -[ which we I guess support (use indexOf otherwise or improve MarkDownDOM to give this)
@@ -124,7 +124,7 @@ async function untick(todoOrPath: Todo | string, ln?: number, ind?: string): Pro
 
     const textEditor = await window.showTextDocument(Uri.file(path), { preview: true });
     const range = textEditor.document.lineAt(line).range;
-    textEditor.revealRange(range);
+    textEditor.revealRange(range, TextEditorRevealType.InCenter);
     await textEditor.edit(editBuilder => {
         const document = textEditor.document;
         // TODO: Verify this won't break with -[ which we I guess support (use indexOf otherwise or improve MarkDownDOM to give this)
