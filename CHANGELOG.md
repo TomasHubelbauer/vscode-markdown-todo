@@ -55,7 +55,7 @@ Exclude default exclusions when looking for workspace MarkDown files.
 
 ## `5.0.2` (2018-04-23)
 
-Upgrade MarkDownDOM for unordred list item indent calculation and do toggling replace precisely at the check character range.
+Upgrade MarkDownDOM for unordered list item indent calculation and do toggling replace precisely at the check character range.
 
 ## `5.0.1` (2018-04-23)
 
