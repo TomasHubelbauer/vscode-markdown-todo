@@ -39,6 +39,7 @@ export async function activate(context: ExtensionContext): Promise<void> {
     context.subscriptions.push(commands.registerCommand('markdown-todo.remove', remove));
     context.subscriptions.push(commands.registerCommand('markdown-todo.tick', tick));
     context.subscriptions.push(commands.registerCommand('markdown-todo.untick', untick));
+    context.subscriptions.push(commands.registerCommand('markdown-todo.detick', detick));
 
     context.subscriptions.push(todoTreeDataProvider);
     context.subscriptions.push(window.createTreeView('to-do-explorer', { treeDataProvider: todoTreeDataProvider }));
@@ -67,7 +68,7 @@ async function remove(todoOrPath: Todo | string, ln?: number): Promise<void> {
 
     const textEditor = await window.showTextDocument(Uri.file(path), { preview: true });
     const range = textEditor.document.lineAt(line).rangeIncludingLineBreak;
-    textEditor.revealRange(range, TextEditorRevealType.InCenter);
+    textEditor.revealRange(range);
     await textEditor.edit(editBuilder => {
         editBuilder.replace(range, '');
     });
@@ -93,7 +94,7 @@ async function tick(todoOrPath: Todo | string, ln?: number, ind?: string): Promi
 
     const textEditor = await window.showTextDocument(Uri.file(path), { preview: true });
     const range = textEditor.document.lineAt(line).range;
-    textEditor.revealRange(range, TextEditorRevealType.InCenter);
+    textEditor.revealRange(range);
     await textEditor.edit(editBuilder => {
         const document = textEditor.document;
         // TODO: Verify this won't break with -[ which we I guess support (use indexOf otherwise or improve MarkDownDOM to give this)
@@ -124,7 +125,7 @@ async function untick(todoOrPath: Todo | string, ln?: number, ind?: string): Pro
 
     const textEditor = await window.showTextDocument(Uri.file(path), { preview: true });
     const range = textEditor.document.lineAt(line).range;
-    textEditor.revealRange(range, TextEditorRevealType.InCenter);
+    textEditor.revealRange(range);
     await textEditor.edit(editBuilder => {
         const document = textEditor.document;
         // TODO: Verify this won't break with -[ which we I guess support (use indexOf otherwise or improve MarkDownDOM to give this)
@@ -132,6 +133,37 @@ async function untick(todoOrPath: Todo | string, ln?: number, ind?: string): Pro
         const checkEnd = document.positionAt(document.offsetAt(range.start) + indent.length + '- [?'.length);
         const checkRange = new Range(checkStart, checkEnd);
         editBuilder.replace(checkRange, ' ');
+    });
+
+    await textEditor.document.save();
+}
+
+async function detick(todo: Todo): Promise<void>;
+async function detick(path: string, line: number, indent: string): Promise<void>;
+async function detick(todoOrPath: Todo | string, ln?: number, ind?: string): Promise<void> {
+    let path: string;
+    let line: number;
+    let indent: string;
+    if (typeof todoOrPath === 'string') {
+        path = todoOrPath;
+        line = ln!;
+        indent = ind!;
+    } else {
+        path = todoOrPath.file.path;
+        line = todoOrPath.line;
+        indent = todoOrPath.indent;
+    }
+
+    const textEditor = await window.showTextDocument(Uri.file(path), { preview: true });
+    const range = textEditor.document.lineAt(line).range;
+    textEditor.revealRange(range);
+    await textEditor.edit(editBuilder => {
+        const document = textEditor.document;
+        // TODO: Verify this won't break with -[ which we I guess support (use indexOf otherwise or improve MarkDownDOM to give this)
+        const checkStart = document.positionAt(document.offsetAt(range.start) + indent.length + '- '.length);
+        const checkEnd = document.positionAt(document.offsetAt(range.start) + indent.length + '- [?] '.length);
+        const checkRange = new Range(checkStart, checkEnd);
+        editBuilder.delete(checkRange);
     });
 
     await textEditor.document.save();
@@ -414,6 +446,13 @@ class TodoCodeLensProvider implements CodeLensProvider {
 
                         // TODO: Figure out why item.indent is always zero
                         const indent = (/^\s+/.exec(line.text) || [''])[0];
+
+                        lenses.push(new CodeLens(line.range, {
+                            title: 'Detick',
+                            command: 'markdown-todo.detick',
+                            arguments: [document.uri.fsPath, line.lineNumber, indent],
+                        }));
+
                         if (item.check !== null) {
                             lenses.push(new CodeLens(line.range, {
                                 title: 'Untick',

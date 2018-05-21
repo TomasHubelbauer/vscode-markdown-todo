@@ -7,6 +7,7 @@
 - Reveal to-do item checkboxes in the center of the editor after clicking
   - The default caused issue with releaving outside of visible range
   - The at-top option caused CodeLens for that item to be hidden
+- Contribute a detick command for removing just the checkbox leaving the text
 
 ## `8.0.0` (2018-05-20)
 

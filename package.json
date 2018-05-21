@@ -48,6 +48,11 @@
                 "icon": "icon/untick.svg"
             },
             {
+                "command": "markdown-todo.detick",
+                "title": "Detick",
+                "icon": "icon/detick.svg"
+            },
+            {
                 "command": "markdown-todo.refresh",
                 "title": "Refresh",
                 "icon": "icon/refresh.svg"
@@ -105,6 +110,11 @@
                 {
                     "group": "inline",
                     "command": "markdown-todo.remove",
+                    "when": "viewItem =~ /todo-(un)?ticked/"
+                },
+                {
+                    "group": "inline",
+                    "command": "markdown-todo.detick",
                     "when": "viewItem =~ /todo-(un)?ticked/"
                 },
                 {
