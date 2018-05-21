@@ -146,6 +146,8 @@
         "@types/mocha": "^2.2.42"
     },
     "dependencies": {
-        "markdown-dom": "0.0.9"
+        "markdown-dom": "0.0.9",
+        "npm": "^6.0.1",
+        "time-ago": "^0.2.1"
     }
 }

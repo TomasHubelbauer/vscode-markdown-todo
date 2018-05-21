@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Display the to-do checkbox age in the CodeLens next to the date.
+
 ## `8.0.0` (2018-05-20)
 
 Contribute a custom view container with the MarkDown To-Do tree view.

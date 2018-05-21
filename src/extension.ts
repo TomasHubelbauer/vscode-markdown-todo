@@ -3,6 +3,7 @@ import MarkDownDOM from 'markdown-dom';
 import { ExtensionContext, window, workspace, Uri, TreeDataProvider, TreeItem, TextDocument, EventEmitter, TreeItemCollapsibleState, ThemeIcon, commands, Selection, Range, RelativePattern, FileSystemWatcher, languages, CodeLensProvider, Event, CancellationToken, CodeLens } from 'vscode';
 import * as path from 'path';
 import * as child_process from 'child_process';
+import * as ta from 'time-ago';
 
 const FileType: 'file' = 'file';
 type File = { type: typeof FileType; path: string; headlessTodos: Todo[]; heads: Head[]; };
@@ -406,7 +407,7 @@ class TodoCodeLensProvider implements CodeLensProvider {
                         lenses.push(new CodeLens(line.range, {
                             title: 'Remove',
                             command: 'markdown-todo.remove',
-                            arguments: [document.uri.fsPath, line.lineNumber]
+                            arguments: [document.uri.fsPath, line.lineNumber],
                         }));
 
                         // TODO: Figure out why item.indent is always zero
@@ -415,13 +416,13 @@ class TodoCodeLensProvider implements CodeLensProvider {
                             lenses.push(new CodeLens(line.range, {
                                 title: 'Untick',
                                 command: 'markdown-todo.untick',
-                                arguments: [document.uri.fsPath, line.lineNumber, indent]
+                                arguments: [document.uri.fsPath, line.lineNumber, indent],
                             }));
                         } else {
                             lenses.push(new CodeLens(line.range, {
                                 title: 'Tick',
                                 command: 'markdown-todo.tick',
-                                arguments: [document.uri.fsPath, line.lineNumber, indent]
+                                arguments: [document.uri.fsPath, line.lineNumber, indent],
                             }));
                         }
                     }
@@ -459,7 +460,7 @@ class TodoCodeLensProvider implements CodeLensProvider {
 
             const dateAndTimeRaw = stdout.split('\n').find(line => line.startsWith('author-time'))!.split(' ')[1];
             const dateAndTime = new Date(Number(dateAndTimeRaw) * 1000);
-            codeLens.command = { title: dateAndTime.toLocaleString(), command: '' };
+            codeLens.command = { title: `${ta.ago(dateAndTime)} (${dateAndTime.toLocaleString()})`, command: 'extension.sayHello' };
             return codeLens;
         }
 
