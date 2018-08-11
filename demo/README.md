@@ -2,6 +2,7 @@
 
 - [ ] Do this
 - [ ] Do that
+- This is not a valid to-do item: [ ] Do not do anything
 
 ## Features
 
