@@ -1,6 +1,6 @@
 'use strict';
 import MarkDownDOM from 'markdown-dom';
-import { ExtensionContext, window, workspace, Uri, TreeDataProvider, TreeItem, TextDocument, EventEmitter, TreeItemCollapsibleState, ThemeIcon, commands, Selection, Range, RelativePattern, FileSystemWatcher, languages, CodeLensProvider, Event, CancellationToken, CodeLens, TextEditorRevealType } from 'vscode';
+import { ExtensionContext, window, workspace, Uri, TreeDataProvider, TreeItem, TextDocument, EventEmitter, TreeItemCollapsibleState, ThemeIcon, commands, Selection, Range, RelativePattern, FileSystemWatcher, languages, CodeLensProvider, Event, CancellationToken, CodeLens, TextEditorRevealType, Disposable } from 'vscode';
 import * as path from 'path';
 import * as child_process from 'child_process';
 import * as ta from 'time-ago';
@@ -15,7 +15,6 @@ type Item = File | Head | Todo;
 
 export async function activate(context: ExtensionContext): Promise<void> {
     const todoTreeDataProvider = new TodoTreeDataProvider();
-    const todoCodeLensProvider = new TodoCodeLensProvider();
 
     context.subscriptions.push(commands.registerCommand('markdown-todo.refresh', () => {
         todoTreeDataProvider.reindex();
@@ -44,11 +43,36 @@ export async function activate(context: ExtensionContext): Promise<void> {
     context.subscriptions.push(todoTreeDataProvider);
     context.subscriptions.push(window.createTreeView('to-do-explorer', { treeDataProvider: todoTreeDataProvider }));
     context.subscriptions.push(window.createTreeView('to-do-view-container', { treeDataProvider: todoTreeDataProvider }));
-    context.subscriptions.push(languages.registerCodeLensProvider({ language: 'markdown' }, todoCodeLensProvider));
+
+    let todoCodeLensProvider: Disposable | undefined;
+    const { enableCodeLens } = workspace.getConfiguration('markdown-todo');
+    if (enableCodeLens) {
+        todoCodeLensProvider = languages.registerCodeLensProvider({ language: 'markdown' }, new TodoCodeLensProvider());
+        context.subscriptions.push(todoCodeLensProvider);
+    }
 
     workspace.onDidChangeConfiguration(event => {
         if (event.affectsConfiguration('markdown-todo.sortByCount')) {
             todoTreeDataProvider.reraise();
+        }
+
+        if (event.affectsConfiguration('markdown-todo.enableCodeLens')) {
+            const { enableCodeLens } = workspace.getConfiguration('markdown-todo');
+            if (enableCodeLens) {
+                if (todoCodeLensProvider) {
+                    // Do nothing
+                } else {
+                    todoCodeLensProvider = languages.registerCodeLensProvider({ language: 'markdown' }, new TodoCodeLensProvider());
+                    context.subscriptions.push(todoCodeLensProvider);
+                }
+            } else {
+                if (todoCodeLensProvider) {
+                    todoCodeLensProvider.dispose();
+                    todoCodeLensProvider = undefined;
+                } else {
+                    // Do nothing
+                }
+            }
         }
     });
 }

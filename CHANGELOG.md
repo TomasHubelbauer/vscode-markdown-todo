@@ -1,5 +1,14 @@
 # Changelog
 
+## `10.0.0` (2018-09-17)
+
+Contribute a setting for turning the CodeLens on and off.
+The setting applies automatically without the need for extension restart.
+
+### Thank You
+
+- John N. Underwood for suggesting a settings toggle for CodeLens
+
 ## `9.0.0` (2018-05-21)
 
 - Display the to-do checkbox age in the CodeLens next to the date
