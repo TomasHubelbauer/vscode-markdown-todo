@@ -1,5 +1,18 @@
 # Changelog
 
+## `11.0.0` (2018-09-21)
+
+Implement telemetry for collecting error events.
+
+**The telemetry reporter respects the VS Code telemetry opt-out flag.**
+
+If you have concerns, reach out to me and I will walk you through what is collected and why.
+
+Currently, I collect the Git invocation for `blame` errors.
+This is used to determine the age of the line and thus the to-do item.
+
+I am looking to replace this with the VS Code Git extension API directly if possible, stay tunes.
+
 ## `10.0.0` (2018-09-17)
 
 Contribute a setting for turning the CodeLens on and off.

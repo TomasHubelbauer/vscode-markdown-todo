@@ -1,3 +1,4 @@
 {
-  "markdown-todo.sortByCount": true
+  "markdown-todo.sortByCount": true,
+  "markdown-todo.enableCodeLens": true
 }

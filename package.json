@@ -2,7 +2,7 @@
     "name": "vscode-markdown-todo",
     "displayName": "MarkDown To-Do",
     "description": "Collects to-do items in MarkDown files to an Explorer tree view with contextual menues for toggling and removing to-do items and keeps the tree view up-to-date as to-do items are inserted, updated and deleted in any MarkDown file in the workspace.",
-    "version": "10.0.0",
+    "version": "11.0.0",
     "license": "MIT",
     "categories": [
         "Programming Languages"
@@ -162,6 +162,7 @@
     "dependencies": {
         "markdown-dom": "0.0.9",
         "npm": "^6.0.1",
-        "time-ago": "^0.2.1"
+        "time-ago": "^0.2.1",
+        "vscode-extension-telemetry": "0.0.20"
     }
 }

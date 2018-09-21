@@ -4,6 +4,7 @@ import { ExtensionContext, window, workspace, Uri, TreeDataProvider, TreeItem, T
 import * as path from 'path';
 import * as child_process from 'child_process';
 import * as ta from 'time-ago';
+import applicationInsights from './telemetry';
 
 const FileType: 'file' = 'file';
 type File = { type: typeof FileType; path: string; headlessTodos: Todo[]; heads: Head[]; };
@@ -14,6 +15,7 @@ type Todo = { type: typeof TodoType; text: string; isChecked: boolean; line: num
 type Item = File | Head | Todo;
 
 export async function activate(context: ExtensionContext): Promise<void> {
+    context.subscriptions.push(applicationInsights);
     const todoTreeDataProvider = new TodoTreeDataProvider();
 
     context.subscriptions.push(commands.registerCommand('markdown-todo.refresh', () => {
@@ -75,6 +77,10 @@ export async function activate(context: ExtensionContext): Promise<void> {
             }
         }
     });
+}
+
+export function deactivate() {
+    applicationInsights.dispose();
 }
 
 async function remove(todo: Todo): Promise<void>;
@@ -501,32 +507,36 @@ class TodoCodeLensProvider implements CodeLensProvider {
 
     async resolveCodeLens(codeLens: CodeLens, token: CancellationToken): Promise<CodeLens> {
         if (codeLens instanceof TodoCodeLens && codeLens.age === undefined) {
-            const workspaceDirectoryPath = workspace.workspaceFolders![0].uri.fsPath;
-            const absoluteFilePath = codeLens.path;
-            const relativeFilePath = path.relative(workspaceDirectoryPath, absoluteFilePath);
-            const { stdout, stderr } = await new Promise<{ stdout: string, stderr: string }>((resolve, reject) => {
-                child_process.exec(
-                    `git --no-pager blame -pL ${codeLens.range.start.line + 1},${codeLens.range.start.line + 1} -- ${relativeFilePath}`,
-                    { cwd: workspaceDirectoryPath },
-                    (error, stdout, stderr) => {
-                        if (!!error) {
-                            reject(error);
-                            return;
-                        }
+            try {
+                const workspaceDirectoryPath = workspace.workspaceFolders![0].uri.fsPath;
+                const absoluteFilePath = codeLens.path;
+                const relativeFilePath = path.relative(workspaceDirectoryPath, absoluteFilePath);
+                const { stdout, stderr } = await new Promise<{ stdout: string, stderr: string }>((resolve, reject) => {
+                    child_process.exec(
+                        `git --no-pager blame -pL ${codeLens.range.start.line + 1},${codeLens.range.start.line + 1} -- ${relativeFilePath}`,
+                        { cwd: workspaceDirectoryPath },
+                        (error, stdout, stderr) => {
+                            if (!!error) {
+                                reject(error);
+                                return;
+                            }
 
-                        resolve({ stdout, stderr });
-                    },
-                );
-            });
+                            resolve({ stdout, stderr });
+                        },
+                    );
+                });
 
-            if (stderr) {
+                if (stderr) {
+                    return codeLens;
+                }
+
+                const dateAndTimeRaw = stdout.split('\n').find(line => line.startsWith('author-time'))!.split(' ')[1];
+                const dateAndTime = new Date(Number(dateAndTimeRaw) * 1000);
+                codeLens.command = { title: `${ta.ago(dateAndTime)} (${dateAndTime.toLocaleString()})`, command: 'extension.sayHello' };
                 return codeLens;
+            } catch (error) {
+                applicationInsights.sendTelemetryEvent('git-exec-error');
             }
-
-            const dateAndTimeRaw = stdout.split('\n').find(line => line.startsWith('author-time'))!.split(' ')[1];
-            const dateAndTime = new Date(Number(dateAndTimeRaw) * 1000);
-            codeLens.command = { title: `${ta.ago(dateAndTime)} (${dateAndTime.toLocaleString()})`, command: 'extension.sayHello' };
-            return codeLens;
         }
 
         return codeLens;
