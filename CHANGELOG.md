@@ -11,6 +11,10 @@ crash asks you to email me the report, so it becomes opt-in. I didn't feel good
 about the telemetry when I introduced it and feel even worse about the prospect
 of it, now, so this solution will be much more aligned with my principles.
 
+Also, the CI has been switched over to GitHub Actions instead of Travis. I don't
+have any tests for this extension yet, though, so this is not really a meaningful
+change, yet.
+
 ## `11.0.0` (2018-09-21)
 
 Implement telemetry for collecting error events.

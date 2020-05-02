@@ -57,3 +57,5 @@ opt-in.
 ### Ditch Travis for CI now that we have GitHub Actions
 
 ### Introduce local opt-in telemetry reporter (to this and other extensions)
+
+### Write up some tests
