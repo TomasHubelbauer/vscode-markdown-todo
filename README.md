@@ -38,3 +38,7 @@ I don't collect anything sketchy or track you, I just want to make sure I fix bu
 # Contributing
 
 See [Contributing](CONTRIBUTING.md).
+
+## To-Do
+
+### Figure out and fix whatever `TodoCodeLens` was meant to be

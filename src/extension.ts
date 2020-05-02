@@ -331,7 +331,7 @@ class TodoTreeDataProvider implements TreeDataProvider<Item> {
 
     private async index() {
         // TODO: https://github.com/Microsoft/vscode/issues/48674
-        const excludes = await workspace.getConfiguration('search', null).get('exclude')!;
+        const excludes = await workspace.getConfiguration('search', null).get('exclude')! as any;
         const globs = Object.keys(excludes).map(exclude => new RelativePattern(workspace.workspaceFolders![0], exclude));
         const occurences: { [fsPath: string]: number; } = {};
         for (const glob of globs) {
@@ -467,7 +467,8 @@ class TodoCodeLensProvider implements CodeLensProvider {
                 if (block.type === 'unordered-list' && block.items.length === 1) {
                     const item = block.items[0];
                     if (item.type === 'checkbox') {
-                        lenses.push(new TodoCodeLens(line.range, document.uri.fsPath));
+                        // TODO: Figure out what I meant by this
+                        //lenses.push(new TodoCodeLens(line.range, document.uri.fsPath));
                         lenses.push(new CodeLens(line.range, {
                             title: 'Remove',
                             command: 'markdown-todo.remove',
