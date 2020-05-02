@@ -4,7 +4,6 @@ import { ExtensionContext, window, workspace, Uri, TreeDataProvider, TreeItem, T
 import * as path from 'path';
 import * as child_process from 'child_process';
 import * as ta from 'time-ago';
-import applicationInsights from './telemetry';
 
 const FileType: 'file' = 'file';
 type File = { type: typeof FileType; path: string; headlessTodos: Todo[]; heads: Head[]; };
@@ -15,7 +14,6 @@ type Todo = { type: typeof TodoType; text: string; isChecked: boolean; line: num
 type Item = File | Head | Todo;
 
 export async function activate(context: ExtensionContext): Promise<void> {
-    context.subscriptions.push(applicationInsights);
     const todoTreeDataProvider = new TodoTreeDataProvider();
 
     context.subscriptions.push(commands.registerCommand('markdown-todo.refresh', () => {
@@ -77,10 +75,6 @@ export async function activate(context: ExtensionContext): Promise<void> {
             }
         }
     });
-}
-
-export function deactivate() {
-    applicationInsights.dispose();
 }
 
 async function remove(todo: Todo): Promise<void>;
@@ -536,7 +530,7 @@ class TodoCodeLensProvider implements CodeLensProvider {
                 codeLens.command = { title: `${ta.ago(dateAndTime)} (${dateAndTime.toLocaleString()})`, command: 'extension.sayHello' };
                 return codeLens;
             } catch (error) {
-                applicationInsights.sendTelemetryEvent('git-exec-error');
+                // TODO: Report the error in the UI and allow report submission
             }
         }
 

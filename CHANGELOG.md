@@ -1,5 +1,16 @@
 # Changelog
 
+## `12.0.0` (2020-05-02)
+
+Long-awaited fix for the "missing command" error has been implemented by hiding
+whatever command it was supposed to even be (2 years…) for now.
+
+Telemetry has been removed, because I haven't used it once and plan on replacing
+telemetry in all my extensions by a local crash reporter which when detecting a
+crash asks you to email me the report, so it becomes opt-in. I didn't feel good
+about the telemetry when I introduced it and feel even worse about the prospect
+of it, now, so this solution will be much more aligned with my principles.
+
 ## `11.0.0` (2018-09-21)
 
 Implement telemetry for collecting error events.
