@@ -47,6 +47,8 @@ opt-in.
 - Update version
 - Update changelog
 - Execute `vsce publish`
+  - Execute `vsce login` if the PAT is expired
+  - https://code.visualstudio.com/api/working-with-extensions/publishing-extension#get-a-personal-access-token
 
 ## To-Do
 
