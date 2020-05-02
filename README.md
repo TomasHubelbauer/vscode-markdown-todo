@@ -42,3 +42,5 @@ See [Contributing](CONTRIBUTING.md).
 ## To-Do
 
 ### Figure out and fix whatever `TodoCodeLens` was meant to be
+
+### Ditch Travis for CI now that we have GitHub Actions
