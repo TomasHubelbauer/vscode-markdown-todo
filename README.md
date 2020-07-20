@@ -46,9 +46,11 @@ opt-in.
 - Run tests (`npm test`)
 - Update version (`package.json`)
 - Update changelog (`CHANGELOG.md`)
-- Execute `vsce publish`
-  - Execute `vsce login` if the PAT is expired
+- Ensure you are logged in or run `vsce login TomasHubelbauer`
+  - https://tomashubelbauer.visualstudio.com/_usersSettings/tokens
   - https://code.visualstudio.com/api/working-with-extensions/publishing-extension#get-a-personal-access-token
+  - Make sure the *All accessible organizations* option was selected
+- Execute `vsce publish`
 
 ## To-Do
 
