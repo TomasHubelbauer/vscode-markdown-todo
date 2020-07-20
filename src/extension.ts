@@ -271,7 +271,10 @@ class TodoTreeDataProvider implements TreeDataProvider<Item> {
     public getChildren(element?: Item | undefined) {
         if (element === undefined) {
             if (this.sortByCount) {
-                return this.cache.slice().sort((a, b) => {
+                return this.cache.slice().filter(a => {
+                    const aCount = this.count(a.headlessTodos).unchecked + a.heads.reduce((count, head) => count + this.count(head.todos).unchecked, 0);
+                    return aCount > 0;
+                }).sort((a, b) => {
                     const aCount = this.count(a.headlessTodos).unchecked + a.heads.reduce((count, head) => count + this.count(head.todos).unchecked, 0);
                     const bCount = this.count(b.headlessTodos).unchecked + b.heads.reduce((count, head) => count + this.count(head.todos).unchecked, 0);
                     return bCount - aCount;
