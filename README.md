@@ -43,7 +43,7 @@ opt-in.
 
 # Publishing
 
-- Run tests
+- Run tests (`npm test`)
 - Update version
 - Update changelog
 - Execute `vsce publish`
