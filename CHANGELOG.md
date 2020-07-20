@@ -1,5 +1,10 @@
 # Changelog
 
+## `12.0.1` (2020-07-20)
+
+Hide branches which include no todos. Courtesy of [@h9h](https://github.com/h9h).
+Thank you!
+
 ## `12.0.0` (2020-05-02)
 
 Long-awaited fix for the "missing command" error has been implemented by hiding

@@ -44,8 +44,8 @@ opt-in.
 # Publishing
 
 - Run tests (`npm test`)
-- Update version
-- Update changelog
+- Update version (`package.json`)
+- Update changelog (`CHANGELOG.md`)
 - Execute `vsce publish`
   - Execute `vsce login` if the PAT is expired
   - https://code.visualstudio.com/api/working-with-extensions/publishing-extension#get-a-personal-access-token
