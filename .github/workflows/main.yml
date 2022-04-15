@@ -10,12 +10,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Install Node.js
-        uses: actions/setup-node@v1
-        with:
-          node-version: 8.x
-      - run: npm install
+
+      - name: Install dependencies
+        run: npm install
+
       - name: Run tests
-        uses: GabrielBB/xvfb-action@v1.0
-        with:
-          run: npm test
+        run: |
+          export DISPLAY=":0"
+          xvfb-run --auto-servernum npm test
