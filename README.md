@@ -6,7 +6,7 @@ Collects to-do items in MarkDown files to an Explorer tree view with contextual 
 
 ![Screenshot](screenshot.gif)
 
-See the [feature rundown](demo\README.md).
+See the [feature rundown](demo/README.md).
 
 ## Running
 
